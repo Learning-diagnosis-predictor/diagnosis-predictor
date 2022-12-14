@@ -14,10 +14,14 @@ def customize_input_cols_per_diag(input_cols, diag):
     
     return input_cols
 
+<<<<<<< HEAD
 def get_cons_diag_col_name_from_new_diag(new_diag):
     return new_diag.replace("New Diag: ", "Diag: ")
 
 def get_input_and_output_cols_for_diag(full_dataset, diag, use_other_diags_as_input):
+=======
+def get_input_and_output_cols_for_diag(full_dataset, diag):
+>>>>>>> 455f809 (fix correlated diags, test cpic)
     
     if use_other_diags_as_input == 1:
         input_cols = [x for x in full_dataset.columns if 
