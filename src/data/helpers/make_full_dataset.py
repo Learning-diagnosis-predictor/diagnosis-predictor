@@ -133,6 +133,15 @@ def get_data_up_to_dropped(full_wo_underscore, EID_columns_until_dropped, column
 
     return data_up_to_dropped
 
+def drop_unused_output_cols(data_up_to_dropped, cog_task_cols):
+
+    for battery in cog_task_cols.keys():
+        cols_to_keep = cog_task_cols[battery]
+        cols_to_drop = [x for x in data_up_to_dropped.columns if battery in x and x not in cols_to_keep]
+        data_up_to_dropped = data_up_to_dropped.drop(cols_to_drop, axis=1)
+    
+    return data_up_to_dropped
+
 def convert_numeric_col_to_numeric_type(col):
     if col.name != "ID" and "Diagnosis_ClinicianConsensus" not in col.name:
         return pd.to_numeric(col, errors='coerce') # Non-numeric values are converted to NaN and removed later in remove_cols_w_missing_over_n function
@@ -155,6 +164,11 @@ def add_missingness_markers(data_up_to_dropped, n, missing_values_df):
     missing_cols_to_mark = list(missing_values_df[(missing_values_df["Persentage missing"] <= 40) & (missing_values_df["Persentage missing"] > n)].index)
     for col in missing_cols_to_mark:
         data_up_to_dropped[col+ "_WAS_MISSING"] = data_up_to_dropped[col].isna()
+    return data_up_to_dropped
+
+def remove_cols_w_missing_output_cols(data_up_to_dropped, cog_task_cols):
+    for battery in cog_task_cols.keys():
+        data_up_to_dropped = data_up_to_dropped.dropna(subset = cog_task_cols[battery])    
     return data_up_to_dropped
 
 def transform_dx_cols(data_up_to_dropped):
@@ -294,13 +308,15 @@ def export_datasets(data_up_to_dropped_item_lvl, data_up_to_dropped_total_scores
 
 def make_full_dataset(only_assessment_distribution, first_assessment_to_drop, only_free_assessments, dirs):
 
+    cog_task_cols = {"WISC": ["WISC,WISC_FSIQ"], "WIAT": ["WIAT,WIAT_Num_Stnd", "WIAT,WIAT_Word_Stnd"]}
+
     # Get relevant assessments: 
     #   relevant cognitive tests, Questionnaire Measures of Emotional and Cognitive Status, and 
     #   Questionnaire Measures of Family Structure, Stress, and Trauma (from Assessment_List_Jan2019.xlsx)
     relevent_assessments_list = ["Basic_Demos", "PreInt_EduHx", "PreInt_DevHx", "SympChck", "SCQ", "Barratt", 
         "ASSQ", "ARI_P", "SDQ", "SWAN", "SRS", "CBCL", "ICU_P", "ICU_SR", "PANAS", "APQ_P", "PCIAT", "DTS", "ESWAN", "MFQ_P", "APQ_SR", 
         "WHODAS_P", "CIS_P", "SAS", "PSI", "RBS", "PhenX_Neighborhood", "WHODAS_SR", "CIS_SR", "SCARED_P", "SCARED_SR", 
-        "C3SR", "CCSC", "CPIC", "YSR", "PhenX_SchoolRisk", "CBCL_Pre", "SRS_Pre", "ASR"]
+        "C3SR", "CCSC", "CPIC", "YSR", "PhenX_SchoolRisk", "CBCL_Pre", "SRS_Pre", "ASR"] + cog_task_cols.keys()
     
     if only_free_assessments == 1:
         relevent_assessments_list = remove_proprietary_assessments(relevent_assessments_list)
@@ -367,6 +383,8 @@ def make_full_dataset(only_assessment_distribution, first_assessment_to_drop, on
         # Remove EID columns: not needed anymore
         data_up_to_dropped = data_up_to_dropped.drop(EID_columns_until_dropped, axis=1)
 
+        data_up_to_dropped = drop_unused_output_cols(data_up_to_dropped, cog_task_cols)
+
         # Aggregare demographics input columns: remove PER parent data from Barratt, only keep aggregated scores
         if "Barratt,Barratt_P1_Edu" in data_up_to_dropped.columns:
             data_up_to_dropped = data_up_to_dropped.drop(["Barratt,Barratt_P1_Edu", "Barratt,Barratt_P1_Occ", "Barratt,Barratt_P2_Edu", "Barratt,Barratt_P2_Occ"], axis=1)
@@ -390,6 +408,8 @@ def make_full_dataset(only_assessment_distribution, first_assessment_to_drop, on
 
         # Add missingness marker for columns with more than 5% missing data 
         data_up_to_dropped = add_missingness_markers(data_up_to_dropped, 5, missing_values_df)
+
+        data_up_to_dropped = remove_cols_w_missing_output_cols(data_up_to_dropped, cog_task_cols)
 
         # Transform diagnosis columns
         data_up_to_dropped = transform_dx_cols(data_up_to_dropped)
