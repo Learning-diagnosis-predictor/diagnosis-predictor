@@ -6,7 +6,6 @@ Predicting learning diagnoses from HBN that have both consensus diagnosis and co
 - Specific Learning Disorder with Impairment in Mathematics
 - Intellectual Disability-Mild
 - Borderline Intellectual Functioning
-- Specific Learning Disorder with Impairment in Written Expression
 
 ## 1 step:
 
