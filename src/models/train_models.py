@@ -251,9 +251,9 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 0, models_from_fi
         "New Diag: Intellectual Disability-Mild",
         "New Diag: Borderline Intellectual Functioning",
     ]
-
     full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl_w_impairment.csv")
-
+    full_dataset = features.make_new_diag_cols(full_dataset, diag_cols)
+    
     # Get list of column names with "Diag." prefix, where number of 
     # positive examples is > threshold
     min_pos_examples_val_set = 20
@@ -278,7 +278,6 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 0, models_from_fi
     if DEBUG_MODE: # Only use first two diagnoses for debugging
         print(diag_cols)
         diag_cols = diag_cols[-1:]
-        diag_cols = ["Diag.Other Specified Attention-Deficit.Hyperactivity Disorder"]
     print(diag_cols)
 
     full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl_w_impairment.csv")
