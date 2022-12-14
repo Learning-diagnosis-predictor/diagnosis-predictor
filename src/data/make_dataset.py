@@ -415,15 +415,12 @@ def main(only_assessment_distribution, first_assessment_to_drop):
         # Add missingness marker for columns with more than 5% missing data 
         data_up_to_dropped = add_missingness_markers(data_up_to_dropped, 5, missing_values_df)
 
-<<<<<<< HEAD
         # Transform diagnosis columns
         data_up_to_dropped = transform_dx_cols(data_up_to_dropped)
-=======
-    data_up_to_dropped = remove_cols_w_missing_output_cols(data_up_to_dropped, cog_task_cols)
+        data_up_to_dropped = remove_cols_w_missing_output_cols(data_up_to_dropped, cog_task_cols)
 
-    # Transform diagnosis columns
-    data_up_to_dropped = transform_dx_cols(data_up_to_dropped)
->>>>>>> 8000f12 (wisc wiat in data preparation)
+        # Transform diagnosis columns
+        data_up_to_dropped = transform_dx_cols(data_up_to_dropped)
 
         # Remove ID column - not needed anymore
         data_up_to_dropped = data_up_to_dropped.drop("ID", axis=1)

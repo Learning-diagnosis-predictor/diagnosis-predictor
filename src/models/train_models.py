@@ -25,7 +25,7 @@ from joblib import load, dump
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
-import util, data, models, util
+import util, data, models, features
 
 DEBUG_MODE = True
 
@@ -245,11 +245,19 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 0, models_from_fi
 
     dirs = set_up_directories(use_other_diags_as_input)
 
+    diag_cols = [
+        "New Diag: Specific Learning Disorder with Impairment in Reading",
+        "New Diag: Specific Learning Disorder with Impairment in Mathematics",
+        "New Diag: Intellectual Disability-Mild",
+        "New Diag: Borderline Intellectual Functioning",
+    ]
+
     full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl_w_impairment.csv")
+    full_dataset = features.make_new_diag_cols(full_dataset, diag_cols)
 
     # Print dataset shape
     print("Full dataset shape: ", full_dataset.shape)
-
+    
     # Get list of column names with "Diag." prefix, where number of 
     # positive examples is > threshold
     min_pos_examples_val_set = 20
@@ -275,6 +283,7 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 0, models_from_fi
         dump_classifiers_and_performances(dirs, best_classifiers, scores_of_best_classifiers, sds_of_scores_of_best_classifiers)
     else: 
         # Create datasets for each diagnosis (different input and output columns)
+        split_percentage = 0.3
         datasets = data.create_datasets(full_dataset, diag_cols, split_percentage, use_other_diags_as_input)
         print("Train set shape: ", datasets[diag_cols[0]]["X_train_train"].shape)
 
