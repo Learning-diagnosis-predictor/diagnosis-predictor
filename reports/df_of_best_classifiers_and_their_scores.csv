@@ -3,6 +3,7 @@
                 ('standardscaler', StandardScaler()),
                 ('logisticregression',
 <<<<<<< HEAD
+<<<<<<< HEAD
                  LogisticRegression(C=0.00459292256901687,
                                     class_weight='balanced',
                                     l1_ratio=0.10812314103949316,
@@ -54,3 +55,27 @@
                                     l1_ratio=0.21181501053797702,
                                     penalty='elasticnet', solver='saga'))])",0.8841594827586207,0.009697659938185794,274,0.8744618228204348
 >>>>>>> 455f809 (fix correlated diags, test cpic)
+=======
+                 LogisticRegression(C=0.008207414501928367,
+                                    l1_ratio=0.22365433736398488,
+                                    penalty='elasticnet', solver='saga'))])",0.7471737097182994,0.012764172217529983,499,0.7344095375007694
+1,New Diag: Specific Learning Disorder with Impairment in Mathematics,logisticregression,"Pipeline(steps=[('simpleimputer', SimpleImputer(strategy='median')),
+                ('standardscaler', StandardScaler()),
+                ('logisticregression',
+                 LogisticRegression(C=0.004718478073856631,
+                                    l1_ratio=0.08784221054839814,
+                                    penalty='elasticnet', solver='saga'))])",0.78979854971678,0.021595619718732716,417,0.7682029299980473
+2,New Diag: Intellectual Disability-Mild,randomforestclassifier,"Pipeline(steps=[('simpleimputer', SimpleImputer(strategy='median')),
+                ('standardscaler', StandardScaler()),
+                ('randomforestclassifier',
+                 RandomForestClassifier(criterion='entropy', max_depth=138,
+                                        max_features=0.25, min_samples_leaf=12,
+                                        n_estimators=200))])",0.9054664398266293,0.02254359800724081,54,0.8829228418193885
+3,New Diag: Borderline Intellectual Functioning,logisticregression,"Pipeline(steps=[('simpleimputer', SimpleImputer(strategy='median')),
+                ('standardscaler', StandardScaler()),
+                ('logisticregression',
+                 LogisticRegression(C=0.02400442430128671,
+                                    class_weight='balanced',
+                                    l1_ratio=0.27782041054834816,
+                                    penalty='elasticnet', solver='saga'))])",0.8827131896593853,0.00986535799340842,324,0.8728478316659769
+>>>>>>> 5fb43c0 (fix correlated diags, test scared_sr)
