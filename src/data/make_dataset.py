@@ -95,7 +95,7 @@ def get_assessment_answer_count(full_wo_underscore, EID_cols):
     assessment_answer_counts.columns = ["N of Participants", "% of Participants Filled"]
     return assessment_answer_counts
 
-def get_relevant_id_cols_by_popularity(assessment_answer_counts):
+def get_relevant_id_cols_by_popularity(assessment_answer_counts, cog_task_cols):
     # Get list of assessments sorted by popularity
     EID_columns_by_popularity = assessment_answer_counts.index
 
@@ -105,7 +105,8 @@ def get_relevant_id_cols_by_popularity(assessment_answer_counts):
     relevant_EID_list = [x+",EID" for x in ["Basic_Demos", "NIH_Scores", "SympChck", "SCQ", "Barratt", 
         "ASSQ", "ARI_P", "SDQ", "SWAN", "SRS", "CBCL", "ICU_P", "APQ_P", "PCIAT", "DTS", "ESWAN", "MFQ_P", "APQ_SR", 
         "WHODAS_P", "CIS_P", "PSI", "RBS", "PhenX_Neighborhood", "WHODAS_SR", "CIS_SR", "SCARED_SR", 
-        "C3SR", "CCSC", "CPIC", "YSR", "PhenX_SchoolRisk", "CBCL_Pre", "SRS_Pre", "ASR"]]
+        "C3SR", "CCSC", "CPIC", "YSR", "PhenX_SchoolRisk", "CBCL_Pre", "SRS_Pre", "ASR"] + list(cog_task_cols.keys())]
+    print(relevant_EID_list)
 
     # Get relevant ID columns sorted by popularity    
     EID_columns_by_popularity = [x for x in EID_columns_by_popularity if x in relevant_EID_list]
@@ -147,6 +148,15 @@ def get_data_up_to_dropped(full_wo_underscore, EID_columns_until_dropped, column
 
     return data_up_to_dropped
 
+def drop_unused_output_cols(data_up_to_dropped, cog_task_cols):
+
+    for battery in cog_task_cols.keys():
+        cols_to_keep = cog_task_cols[battery]
+        cols_to_drop = [x for x in data_up_to_dropped.columns if battery in x and x not in cols_to_keep]
+        data_up_to_dropped = data_up_to_dropped.drop(cols_to_drop, axis=1)
+    
+    return data_up_to_dropped
+
 def convert_numeric_col_to_numeric_type(col):
     if col.name != "ID" and "Diagnosis_ClinicianConsensus" not in col.name:
         return pd.to_numeric(col)
@@ -169,6 +179,11 @@ def add_missingness_markers(data_up_to_dropped, n, missing_values_df):
     missing_cols_to_mark = list(missing_values_df[(missing_values_df["Persentage missing"] <= 40) & (missing_values_df["Persentage missing"] > n)].index)
     for col in missing_cols_to_mark:
         data_up_to_dropped[col+ "_WAS_MISSING"] = data_up_to_dropped[col].isna()
+    return data_up_to_dropped
+
+def remove_cols_w_missing_output_cols(data_up_to_dropped, cog_task_cols):
+    for battery in cog_task_cols.keys():
+        data_up_to_dropped = data_up_to_dropped.dropna(subset = cog_task_cols[battery])    
     return data_up_to_dropped
 
 def transform_dx_cols(data_up_to_dropped):
@@ -290,6 +305,7 @@ def export_datasets(data_up_to_dropped, data_up_to_dropped_item_lvl, data_up_to_
 def main(first_assessment_to_drop):
 
     data_statistics_dir, data_output_dir = create_repositories()
+    cog_task_cols = {"WISC": ["WISC,WISC_FSIQ"], "WIAT": ["WIAT,WIAT_Num_Stnd", "WIAT,WIAT_Word_Stnd"]}
 
     # LORIS saved query (all data)
     full = pd.read_csv("data/raw/LORIS-release-10.csv", dtype=object)
@@ -331,7 +347,7 @@ def main(first_assessment_to_drop):
     assessment_answer_counts.to_csv(data_statistics_dir + "assessment-filled-distrib.csv")
 
     # Get relevant ID columns sorted by popularity
-    EID_columns_by_popularity = get_relevant_id_cols_by_popularity(assessment_answer_counts)    
+    EID_columns_by_popularity = get_relevant_id_cols_by_popularity(assessment_answer_counts, cog_task_cols)    
 
     # Get cumulative distribution of assessments: number of people who took all top 1, top 2, top 3, etc. popular assessments 
     cumul_number_of_examples_df = get_cumul_number_of_examples_df(full_wo_underscore, EID_columns_by_popularity)
@@ -354,6 +370,8 @@ def main(first_assessment_to_drop):
     # Remove EID columns: not needed anymore
     data_up_to_dropped = data_up_to_dropped.drop(EID_columns_until_dropped, axis=1)
 
+    data_up_to_dropped = drop_unused_output_cols(data_up_to_dropped, cog_task_cols)
+
     # Aggregare demographics input columns: remove per parent data from Barratt
     data_up_to_dropped = data_up_to_dropped.drop(["Barratt,Barratt_P1_Edu", "Barratt,Barratt_P1_Occ", "Barratt,Barratt_P2_Edu", "Barratt,Barratt_P2_Occ"], axis=1)
 
@@ -372,6 +390,8 @@ def main(first_assessment_to_drop):
 
     # Add missingness marker for columns with more than 5% missing data 
     data_up_to_dropped = add_missingness_markers(data_up_to_dropped, 5, missing_values_df)
+
+    data_up_to_dropped = remove_cols_w_missing_output_cols(data_up_to_dropped, cog_task_cols)
 
     # Transform diagnosis columns
     data_up_to_dropped = transform_dx_cols(data_up_to_dropped)
