@@ -180,7 +180,13 @@ def main(only_assessment_distribution, first_assessment_to_drop, use_other_diags
     # positive examples is > threshold
     min_pos_examples_val_set = 20
     split_percentage = 0.2
-    all_diags = [x for x in full_dataset.columns if x.startswith("Diag.")]
+    
+    all_diags = [
+        "New Diag: Specific Learning Disorder with Impairment in Reading",
+        "New Diag: Specific Learning Disorder with Impairment in Mathematics",
+        "New Diag: Intellectual Disability-Mild",
+        "New Diag: Borderline Intellectual Functioning",
+    ]
     positive_examples_in_ds = get_positive_examples_in_ds(full_dataset, all_diags)
     
     diag_cols = find_diags_w_enough_positive_examples_in_val_set(positive_examples_in_ds, all_diags, split_percentage, min_pos_examples_val_set)

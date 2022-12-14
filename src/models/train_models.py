@@ -25,7 +25,7 @@ from joblib import load, dump
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
-import util, data, models, util
+import util, data, models, features
 
 DEBUG_MODE = True
 
