@@ -1,6 +1,12 @@
-# diagnosis-predictor
+# learning-diagnosis-predictor
 
-File structure: http://drivendata.github.io/cookiecutter-data-science/#directory-structure 
+Use-case of https://github.com/charlie42/diagnosis-predictor.
+Predicting learning diagnoses from HBN that have both consensus diagnosis and corresponding WISC and WAIS scores:
+- Specific Learning Disorder with Impairment in Reading
+- Specific Learning Disorder with Impairment in Mathematics
+- Intellectual Disability-Mild
+- Borderline Intellectual Functioning
+- Specific Learning Disorder with Impairment in Written Expression
 
 ## 1 step:
 
