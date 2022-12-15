@@ -9,7 +9,7 @@ Predicting learning diagnoses from HBN that have both consensus diagnosis and co
 
 ## 1 step:
 
-`python -W ignore src/data/make_dataset.py SCARED_SR`
+`python -W ignore src/data/make_dataset.py CPIC`
 
 Arguments: first_assessment_to_drop
 
