@@ -184,6 +184,7 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 1, models_from_fi
     full_dataset = features.make_new_diag_cols(full_dataset, diag_cols)
 
     # Create datasets for each diagnosis (different input and output columns)
+    split_percentage = 0.3
     datasets = data.create_datasets(full_dataset, diag_cols, split_percentage, use_other_diags_as_input)
     dump(datasets, models_dir+'datasets.joblib', compress=1)
 
