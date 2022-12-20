@@ -251,6 +251,8 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 0, models_from_fi
         "New Diag: Intellectual Disability-Mild",
         "New Diag: Borderline Intellectual Functioning",
     ]
+    if DEBUG_MODE: # Only use first two diagnoses for debugging
+        diag_cols = diag_cols[:2]
 
     full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl_w_impairment.csv")
     full_dataset = features.make_new_diag_cols(full_dataset, diag_cols)
