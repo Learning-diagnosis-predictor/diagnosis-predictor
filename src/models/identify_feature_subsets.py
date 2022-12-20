@@ -14,7 +14,23 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 import models, util
 
+<<<<<<< HEAD
 DEBUG_MODE = False
+=======
+def set_up_directories(keep_old_importances=0):
+
+    input_data_dir = "data/train_models/"
+    models_dir = "models/" + "train_models/"
+    input_reports_dir = "reports/" + "train_models/"
+
+    output_reports_dir = "reports/" + "identify_feature_subsets/"
+    util.create_dir_if_not_exists(output_reports_dir)
+
+    if keep_old_importances == 0:
+        util.clean_dirs([output_reports_dir]) # Remove old models and reports
+
+    return {"input_data_dir": input_data_dir,  "models_dir": models_dir, "input_reports_dir": input_reports_dir, "output_reports_dir": output_reports_dir}
+>>>>>>> cab5a30 (CODE: refactor -clean models and reports dir in the rest of the project)
 
 def build_output_dir_name(params_from_previous_script):
     # Part with the datetime
