@@ -10,16 +10,20 @@ import os
 import matplotlib.pyplot as plt
 import sys
 
-def create_repositories():
-    data_statistics_dir = "reports/"
-    if not os.path.exists(data_statistics_dir):
-        os.mkdir(data_statistics_dir)
+# To import from parent directory
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
+import util
+
+def set_up_directories():
+    data_statistics_dir = "reports/make_dataset/"
+    util.create_dir_if_not_exists(data_statistics_dir)
 
     data_output_dir = "data/processed/"
-    if not os.path.exists(data_output_dir):
-        os.mkdir(data_output_dir)
-        
-    pd.set_option("display.max_columns", None)
+    util.create_dir_if_not_exists(data_output_dir)
+
+    util.clean_dirs([data_statistics_dir, data_output_dir]) # Remove old models and reports
 
     return data_statistics_dir, data_output_dir
 
@@ -304,7 +308,7 @@ def export_datasets(data_up_to_dropped, data_up_to_dropped_item_lvl, data_up_to_
 
 def main(first_assessment_to_drop):
 
-    data_statistics_dir, data_output_dir = create_repositories()
+    data_statistics_dir, data_output_dir = set_up_directories()
     cog_task_cols = {"WISC": ["WISC,WISC_FSIQ"], "WIAT": ["WIAT,WIAT_Num_Stnd", "WIAT,WIAT_Word_Stnd"]}
 
     # LORIS saved query (all data)
