@@ -27,13 +27,13 @@ Arguments: auc_threshold = 0.8, use_test_set=1
 
 ## 4 step:
 
-`python -W ignore src/models/identify_feature_subsets.py 50 1 0`
+`python -W ignore src/models/identify_feature_subsets.py 50 0 0`
 
 Arguments: number_of_features_to_check = 50, importances_from_file = 0, ignore_non_lr_diags = 0
 
 ## 5 step
 
-`python -W ignore src/models/evaluate_models_on_feature_subsets.py 1`
+`python -W ignore src/models/evaluate_models_on_feature_subsets.py 0`
 
 Arguments: models_from_file = 1
 
