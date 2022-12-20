@@ -16,11 +16,55 @@ import models, util
 
 DEBUG_MODE = True
 
-def build_output_dir_name(params_from_previous_script):
+def build_output_dir_name(params_from_create_datasets):
     # Part with the datetime
     datetime_part = util.get_string_with_current_datetime()
 
-    return datetime_part + "___" + util.build_param_string_for_dir_name(params_from_previous_script)
+    # Part with the params
+    params_part = util.build_param_string_for_dir_name(params_from_create_datasets) + "___" +\
+                  util.build_param_string_for_dir_name({"debug_mode": DEBUG_MODE})
+    
+    return datetime_part + "___" + params_part
+
+def set_up_directories():
+
+    # Create directory in the parent directory of the project (separate repo) for output data, models, and reports
+    data_dir = "../diagnosis_predictor_data/"
+    util.create_dir_if_not_exists(data_dir)
+
+    # Input dirs
+    input_data_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "data/create_datasets/")
+
+    # Create directory inside the output directory with the run timestamp and params:
+    #    - [params from create_datasets.py]
+    #    - use other diags as input
+    #    - debug mode
+    params_from_create_datasets = models.get_params_from_current_data_dir_name(input_data_dir)
+    current_output_dir_name = build_output_dir_name(params_from_create_datasets)
+
+    output_data_dir = data_dir + "data/create_datasets/" + current_output_dir_name + "/"
+    util.create_dir_if_not_exists(output_data_dir)
+
+    models_dir = data_dir + "models/" + "train_models/" + current_output_dir_name + "/"
+    util.create_dir_if_not_exists(models_dir)
+
+    reports_dir = data_dir + "reports/" + "train_models/" + current_output_dir_name + "/"
+    util.create_dir_if_not_exists(reports_dir) 
+
+    return {"input_data_dir": input_data_dir, "output_data_dir": output_data_dir, "models_dir": models_dir, "reports_dir": reports_dir}
+
+def set_up_load_directories():
+    # When loading existing models, can't take the newest directory, we just created it, it will be empty. 
+    #   Need to take the newest non-empty directory.
+
+    data_dir = "../diagnosis_predictor_data/"
+    
+    load_data_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "data/create_datasets/")
+    load_models_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "models/train_models/")
+    load_reports_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "reports/train_models/")
+    
+    return {"load_data_dir": load_data_dir, "load_models_dir": load_models_dir, "load_reports_dir": load_reports_dir}
+    
 
 def set_up_directories():
 
