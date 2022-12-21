@@ -25,9 +25,9 @@ from joblib import load, dump
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
-import data, util
+import data, util, features
 
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 def set_up_directories(keep_old_models=0):
 
@@ -190,10 +190,6 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 1, models_from_fi
 
     dirs = set_up_directories(keep_old_models = models_from_file)
 
-    full_dataset = pd.read_csv(dirs["data_input_dir"] + "item_lvl_w_impairment.csv")
-    # Create new diagnosis columns based on consensus and test-based diagnoses
-    full_dataset = features.make_new_diag_cols(full_dataset, diag_cols)
-
     diag_cols = [
         "New Diag: Specific Learning Disorder with Impairment in Reading",
         "New Diag: Specific Learning Disorder with Impairment in Mathematics",
@@ -203,6 +199,10 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 1, models_from_fi
     if DEBUG_MODE: # Only use first two diagnoses for debugging
         diag_cols = diag_cols[:2]
     print(diag_cols)
+
+    full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl_w_impairment.csv")
+    # Create new diagnosis columns based on consensus and test-based diagnoses
+    full_dataset = features.make_new_diag_cols(full_dataset, diag_cols)
 
     if models_from_file == 1:
         datasets = load(dirs["output_data_dir"]+'datasets.joblib')
