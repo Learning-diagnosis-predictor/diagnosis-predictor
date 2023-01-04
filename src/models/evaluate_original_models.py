@@ -21,7 +21,7 @@ def build_output_dir_name(params_from_train_models, params_from_evaluate_origina
 
 def set_up_directories(use_test_set):
 
-    data_dir = "../diagnosis_predictor_data/"
+    data_dir = "../learning_diagnosis_predictor_data/"
 
     # Input dirs
     input_data_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "data/train_models/")

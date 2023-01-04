@@ -28,7 +28,7 @@ def build_output_dir_name(first_assessment_to_drop):
 def set_up_directories(first_assessment_to_drop):
 
     # Create directory in the parent directory of the project (separate repo) for output data, models, and reports
-    data_dir = "../diagnosis_predictor_data/"
+    data_dir = "../learning_diagnosis_predictor_data/"
     util.create_dir_if_not_exists(data_dir)
 
     # Create directory inside the output directory with the run timestamp and first_assessment_to_drop param
