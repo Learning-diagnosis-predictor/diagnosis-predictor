@@ -25,7 +25,7 @@ def build_output_dir_name(params_from_previous_script):
 
 def set_up_directories():
 
-    data_dir = "../diagnosis_predictor_data/"
+    data_dir = "../learning_diagnosis_predictor_data/"
 
     # Input dirs
     input_data_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "data/create_datasets/")

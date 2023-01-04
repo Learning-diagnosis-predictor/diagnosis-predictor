@@ -42,7 +42,7 @@ def build_output_dir_name(params_from_create_datasets):
 def set_up_directories():
 
     # Create directory in the parent directory of the project (separate repo) for output data, models, and reports
-    data_dir = "../diagnosis_predictor_data/"
+    data_dir = "../learning_diagnosis_predictor_data/"
     util.create_dir_if_not_exists(data_dir)
 
     # Input dirs
@@ -67,7 +67,7 @@ def set_up_load_directories():
     # When loading existing models, can't take the newest directory, we just created it, it will be empty. 
     #   Need to take the newest non-empty directory.
 
-    data_dir = "../diagnosis_predictor_data/"
+    data_dir = "../learning_diagnosis_predictor_data/"
     
     load_data_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "data/create_datasets/")
     load_models_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "models/train_models/")
@@ -237,6 +237,9 @@ def main(performance_margin = 0.02, models_from_file = 1):
     if DEBUG_MODE:
         #diag_cols = diag_cols[0:2]
         pass
+
+    full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl_w_impairment.csv")
+    full_dataset = features.make_new_diag_cols(full_dataset, diag_cols)
 
     if models_from_file == 1:
         
