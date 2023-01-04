@@ -29,7 +29,7 @@ def build_output_dir_name(params_from_create_datasets):
 def set_up_directories():
 
     # Create directory in the parent directory of the project (separate repo) for output data, models, and reports
-    data_dir = "../diagnosis_predictor_data/"
+    data_dir = "../learning_diagnosis_predictor_data/"
     util.create_dir_if_not_exists(data_dir)
 
     # Input dirs
@@ -57,7 +57,7 @@ def set_up_load_directories():
     # When loading existing models, can't take the newest directory, we just created it, it will be empty. 
     #   Need to take the newest non-empty directory.
 
-    data_dir = "../diagnosis_predictor_data/"
+    data_dir = "../learning_diagnosis_predictor_data/"
     
     load_data_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "data/create_datasets/")
     load_models_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "models/train_models/")
@@ -65,41 +65,6 @@ def set_up_load_directories():
     
     return {"load_data_dir": load_data_dir, "load_models_dir": load_models_dir, "load_reports_dir": load_reports_dir}
     
-
-def set_up_directories():
-
-    data_dir = "../diagnosis_predictor_data/"
-
-    # Input dirs
-    input_data_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "data/create_datasets/")
-    print("Reading data from: " + input_data_dir)
-    models_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "models/train_models/")
-    print("Reading models from: " + models_dir)
-    input_reports_dir = models.get_newest_non_empty_dir_in_dir(data_dir+ "reports/train_models/")
-    print("Reading reports from: " + input_reports_dir)
-
-    # Output dirs
-    params_from_previous_script = models.get_params_from_current_data_dir_name(input_data_dir)
-    current_output_dir_name = build_output_dir_name(params_from_previous_script)
-
-    output_reports_dir = data_dir + "reports/" + "identify_feature_subsets/" + current_output_dir_name + "/"
-    util.create_dir_if_not_exists(output_reports_dir)
-
-    output_models_dir = data_dir + "models/" + "identify_feature_subsets/" + current_output_dir_name + "/"
-    util.create_dir_if_not_exists(output_models_dir)
-
-    print("DEBUG", params_from_previous_script, current_output_dir_name, output_reports_dir, output_models_dir)
-
-    return {"input_data_dir": input_data_dir,  "models_dir": models_dir, "input_reports_dir": input_reports_dir, 
-            "output_reports_dir": output_reports_dir, "output_models_dir": output_models_dir}
-
-def set_up_load_directories():
-    data_dir = "../diagnosis_predictor_data/"
-
-    load_reports_dir = models.get_newest_non_empty_dir_in_dir(data_dir+ "reports/identify_feature_subsets/")
-    load_models_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "models/identify_feature_subsets/")
-
-    return {"load_reports_dir": load_reports_dir, "load_models_dir": load_models_dir}
 
 def get_feature_subsets(best_estimators, datasets, number_of_features_to_check, dirs):
     feature_subsets = {}
