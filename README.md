@@ -1,9 +1,10 @@
 # learning-diagnosis-predictor
 
 Use-case of https://github.com/charlie42/diagnosis-predictor.
-Predicting learning diagnoses from HBN that have both consensus diagnosis and corresponding WISC and WAIS scores:
+Predicting learning diagnoses from HBN:
 - Specific Learning Disorder with Impairment in Reading
 - Specific Learning Disorder with Impairment in Mathematics
+- Specific Learning Disorder with Impairment in Written Expression
 - Intellectual Disability-Mild
 - Borderline Intellectual Functioning
 
