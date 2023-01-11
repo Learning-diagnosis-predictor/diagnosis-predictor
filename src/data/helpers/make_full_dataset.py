@@ -87,6 +87,18 @@ def get_relevant_id_cols_by_popularity(assessment_answer_counts, relevant_assess
     # Get list of assessments sorted by popularity
     EID_columns_by_popularity = assessment_answer_counts.index
 
+<<<<<<< HEAD:src/data/helpers/make_full_dataset.py
+=======
+    # Get relevant assessments: 
+    #   relevant cognitive tests, Questionnaire Measures of Emotional and Cognitive Status, and 
+    #   Questionnaire Measures of Family Structure, Stress, and Trauma (from Assessment_List_Jan2019.xlsx)
+    relevant_EID_list = [x+",EID" for x in ["Basic_Demos", "PreInt_EduHx", "PreInt_DevHx", "NIH_Scores", "SympChck", "SCQ", "Barratt", 
+        "ASSQ", "ARI_P", "SDQ", "SWAN", "SRS", "CBCL", "ICU_P", "APQ_P", "PCIAT", "DTS", "ESWAN", "MFQ_P", "APQ_SR", 
+        "WHODAS_P", "CIS_P", "PSI", "RBS", "PhenX_Neighborhood", "WHODAS_SR", "CIS_SR", "SCARED_SR", 
+        "C3SR", "CCSC", "CPIC", "YSR", "PhenX_SchoolRisk", "CBCL_Pre", "SRS_Pre", "ASR"] + list(cog_task_cols.keys())]
+    print(relevant_EID_list)
+
+>>>>>>> 64f2e10 (merge changes from main):src/data/make_dataset.py
     # Get relevant ID columns sorted by popularity    
     EID_columns_by_popularity = [x for x in EID_columns_by_popularity if x in relevant_EID_list]
 
@@ -332,6 +344,9 @@ def make_full_dataset(only_assessment_distribution, first_assessment_to_drop, on
 
     # Drop empty columns
     full = full.dropna(how='all', axis=1)
+
+    # Remove irrelevant NIH toolbox columns
+    full = remove_irrelevant_nih_cols(full)
 
     full = remove_admin_cols(full)
 
