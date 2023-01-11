@@ -248,6 +248,7 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 0, models_from_fi
     diag_cols = [
         "New Diag.Specific Learning Disorder with Impairment in Reading",
         "New Diag.Specific Learning Disorder with Impairment in Mathematics",
+        "New Diag.Specific Learning Disorder with Impairment in Written Expression",
         "New Diag.Intellectual Disability-Mild",
         "New Diag.Borderline Intellectual Functioning",
     ]
@@ -258,25 +259,11 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 0, models_from_fi
     # positive examples is > threshold
     min_pos_examples_val_set = 20
     split_percentage = 0.2
-    all_diags = diag_cols
-    diag_cols = find_diags_w_enough_positive_examples_in_val_set(full_dataset, all_diags, split_percentage, min_pos_examples_val_set)
-    if DEBUG_MODE: # Only use first two diagnoses for debugging
-        diag_cols = diag_cols[:2]
-
-    full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl_w_impairment.csv")
-    full_dataset = features.make_new_diag_cols(full_dataset, diag_cols)
-
-    # Print dataset shape
-    print("Full dataset shape: ", full_dataset.shape)
-    
-    # Get list of column names with "Diag." prefix, where number of 
-    # positive examples is > threshold
-    min_pos_examples_val_set = 20
-    split_percentage = 0.2
     diag_cols = find_diags_w_enough_positive_examples_in_val_set(full_dataset, diag_cols, split_percentage, min_pos_examples_val_set)
     if DEBUG_MODE: # Only use first two diagnoses for debugging
         print(diag_cols)
         #diag_cols = diag_cols[-1:]
+        diag_cols = diag_cols
     print(diag_cols)
 
     full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl_w_impairment.csv")
