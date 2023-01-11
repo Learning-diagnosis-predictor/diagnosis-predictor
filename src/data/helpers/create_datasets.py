@@ -1,21 +1,18 @@
 from sklearn.model_selection import train_test_split
 
 def get_cons_diag_col_name_from_new_diag(new_diag):
-    return new_diag.replace("New Diag: ", "Diag: ")
+    return new_diag.replace("New Diag.", "Diag.")
 
 def customize_input_cols_per_diag(input_cols, diag):
     # Remove "Diag.Intellectual Disability-Mild" when predicting "Diag.Borderline Intellectual Functioning"
     #   and vice versa because they are highly correlated, same for other diagnoses
     
-    if diag == "New Diag: Intellectual Disability-Mild":
-        input_cols = [x for x in input_cols if x not in ["New Diag: Borderline Intellectual Functioning", get_cons_diag_col_name_from_new_diag("New Diag: Borderline Intellectual Functioning")]]
-    if diag == "New Diag: Borderline Intellectual Functioning":
-        input_cols = [x for x in input_cols if x not in ["New Diag: Intellectual Disability-Mild", get_cons_diag_col_name_from_new_diag("New Diag: Intellectual Disability-Mild")]]
+    if diag == "New Diag.Intellectual Disability-Mild":
+        input_cols = [x for x in input_cols if x not in ["New Diag.Borderline Intellectual Functioning", get_cons_diag_col_name_from_new_diag("New Diag.Borderline Intellectual Functioning")]]
+    if diag == "New Diag.Borderline Intellectual Functioning":
+        input_cols = [x for x in input_cols if x not in ["New Diag.Intellectual Disability-Mild", get_cons_diag_col_name_from_new_diag("New Diag.Intellectual Disability-Mild")]]
     
     return input_cols
-
-def get_cons_diag_col_name_from_new_diag(new_diag):
-    return new_diag.replace("New Diag.", "Diag.")
 
 def get_input_and_output_cols_for_diag(full_dataset, diag, use_other_diags_as_input):
     

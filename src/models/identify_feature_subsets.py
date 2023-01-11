@@ -52,6 +52,8 @@ def get_feature_subsets(best_classifiers, datasets, number_of_features_to_check,
         print(diag, base_model_type)
         if DEBUG_MODE and base_model_type != "logisticregression": # Don't do RF models in debug mode, takes long
             continue
+        if DEBUG_MODE and diag != "Diag.Specific Learning Disorder with Impairment in Reading": ################################# DEBUG
+            continue
         # If base model is exposes feature importances, use RFE to get first 50 feature, then use SFS to get the rest.
         if not (base_model_type == "svc" and base_model.kernel != "linear"):
             feature_subsets[diag] = models.get_feature_subsets_from_rfe_then_sfs(diag, best_classifiers, datasets, number_of_features_to_check)
