@@ -254,6 +254,9 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 0, models_from_fi
     ]
     full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl_w_impairment.csv")
     full_dataset = features.make_new_diag_cols(full_dataset, diag_cols)
+
+    # Print shape of dataset
+    print("Shape of dataset: " + str(full_dataset.shape))
     
     # Get list of column names with "Diag." prefix, where number of 
     # positive examples is > threshold
