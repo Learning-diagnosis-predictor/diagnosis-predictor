@@ -83,6 +83,7 @@ def append_feature_names_to_feature_subsets(feature_subsets):
                 and not x.endswith("WAS_MISSING")
                 and not x.endswith("financialsupport") # Not in data dictionary
                 and not x.endswith("Panic_A01A") # Not in data dictionary
+                and not x.endswith("Panic_A02A")
                 and not x.endswith("Panic_A02A") 
                 and not x.endswith("Panic_A02B")]
     return feature_subsets_with_names
