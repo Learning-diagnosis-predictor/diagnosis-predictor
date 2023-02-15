@@ -40,7 +40,7 @@ def set_up_directories():
     return {"input_data_dir": input_data_dir,  "models_dir": models_dir, "input_reports_dir": input_reports_dir, "output_reports_dir": output_reports_dir}
 
 def set_up_load_directories():
-    data_dir = "../diagnosis_predictor_data/"
+    data_dir = "../learning_diagnosis_predictor_data/"
     load_reports_dir = models.get_newest_non_empty_dir_in_dir(data_dir+ "reports/identify_feature_subsets/")
     return {"load_reports_dir": load_reports_dir}
 
@@ -63,9 +63,13 @@ def get_feature_subsets(best_classifiers, datasets, number_of_features_to_check,
         dump(feature_subsets, dirs["output_reports_dir"]+'feature-subsets.joblib')
     return feature_subsets
 
+def fix_data_dict(names_df):
+    # Replace ICU_X with ICU_P_X where X is item number (except ICU_SR lines)
+    names_df.index = names_df.index.str.replace(r"ICU_(?!(SR))", "ICU_P_")
+    return names_df
+
 def append_feature_names_to_feature_subsets(feature_subsets):
-    names_df = pd.read_csv("references/item-names.csv", index_col=1, encoding = "ISO-8859-1", names=["Name", "ID"], sep=";")
-    print(names_df)
+    names_df = fix_data_dict(pd.read_csv("references/item-names.csv", index_col=1, encoding = "ISO-8859-1", names=["Name", "ID"], sep=";"))
     feature_subsets_with_names = {}
     for diag in feature_subsets.keys():
         feature_subsets_with_names[diag] = {}
@@ -77,7 +81,10 @@ def append_feature_names_to_feature_subsets(feature_subsets):
                 for x in feature_subsets[diag][subset] 
                 if not x.startswith("Basic_Demos")
                 and not x.endswith("WAS_MISSING")
-                and not x.endswith("financialsupport")]
+                and not x.endswith("financialsupport") # Not in data dictionary
+                and not x.endswith("Panic_A01A") # Not in data dictionary
+                and not x.endswith("Panic_A02A") 
+                and not x.endswith("Panic_A02B")]
     return feature_subsets_with_names
 
 def write_feature_subsets_to_text_file(feature_subsets, output_reports_dir):
