@@ -251,6 +251,7 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 0, models_from_fi
         "New Diag.Specific Learning Disorder with Impairment in Written Expression",
         "New Diag.Intellectual Disability-Mild",
         "New Diag.Borderline Intellectual Functioning",
+        "New Diag.Processing Speed Deficit"
     ]
     full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl_w_impairment.csv")
     full_dataset = features.make_new_diag_cols(full_dataset, diag_cols)

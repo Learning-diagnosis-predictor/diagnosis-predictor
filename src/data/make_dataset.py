@@ -340,7 +340,7 @@ def main(only_assessment_distribution, first_assessment_to_drop):
     only_assessment_distribution = int(only_assessment_distribution)
 
     data_statistics_dir, data_output_dir = set_up_directories(first_assessment_to_drop)
-    cog_task_cols = {"WISC": ["WISC,WISC_FSIQ"], "WIAT": ["WIAT,WIAT_Num_Stnd", "WIAT,WIAT_Word_Stnd"]}
+    cog_task_cols = {"WISC": ["WISC,WISC_FSIQ", "WISC,WISC_PSI"], "WIAT": ["WIAT,WIAT_Num_Stnd", "WIAT,WIAT_Word_Stnd"]}
 
     # LORIS saved query (all data)
     full = pd.read_csv("data/raw/LORIS-release-10.csv", dtype=object)
