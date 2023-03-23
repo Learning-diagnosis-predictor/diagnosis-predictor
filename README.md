@@ -10,7 +10,7 @@ Predicting learning diagnoses from HBN:
 
 ## 1 step:
 
-`python -W ignore src/data/make_dataset.py 1 ICU_P`
+`python -W ignore src/data/make_dataset.py 0 CPIC`
 
 Arguments: only_assessment_distribution, first_assessment_to_drop
 
