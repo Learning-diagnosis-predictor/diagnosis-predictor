@@ -316,7 +316,19 @@ def export_datasets(data_up_to_dropped_item_lvl, data_up_to_dropped_total_scores
 
 def make_full_dataset(only_assessment_distribution, first_assessment_to_drop, only_free_assessments, dirs):
 
+<<<<<<< HEAD:src/data/helpers/make_full_dataset.py
     cog_task_cols = {"WISC": ["WISC,WISC_FSIQ"], "WIAT": ["WIAT,WIAT_Num_Stnd", "WIAT,WIAT_Word_Stnd"]}
+=======
+    data_up_to_SCARED_item_lvl_w_impairment.to_csv(data_output_dir + "item_lvl_w_impairment.csv", index=False)
+    data_up_to_SCARED_subscale_scores_w_impairment.to_csv(data_output_dir + "subscale_scores_w_impairment.csv", index=False)
+    data_up_to_SCARED_total_scores_w_impairment.to_csv(data_output_dir + "total_scores_w_impairment.csv", index=False)
+
+def main(only_assessment_distribution, first_assessment_to_drop):
+    only_assessment_distribution = int(only_assessment_distribution)
+
+    data_statistics_dir, data_output_dir = set_up_directories(first_assessment_to_drop)
+    cog_task_cols = {"WISC": ["WISC,WISC_FSIQ", "WISC,WISC_PSI"], "WIAT": ["WIAT,WIAT_Num_Stnd", "WIAT,WIAT_Word_Stnd"]}
+>>>>>>> 13b984c (add processing speed diag):src/data/make_dataset.py
 
     # Get relevant assessments: 
     #   relevant cognitive tests, Questionnaire Measures of Emotional and Cognitive Status, and 
