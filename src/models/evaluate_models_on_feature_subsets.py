@@ -248,6 +248,7 @@ def main(models_from_file = 1):
         dump(optimal_thresholds, dirs["output_reports_dir"]+'optimal-thresholds.joblib')
         dump(estimators_on_feature_subsets, dirs["output_models_dir"]+'estimators-on-feature-subsets.joblib')
     else:
+<<<<<<< HEAD
         estimators_on_feature_subsets = models.re_train_models_on_feature_subsets(feature_subsets, datasets, best_estimators)
         performances_on_feature_subsets, cv_scores_on_feature_subsets, optimal_thresholds = models.get_performances_on_feature_subsets(feature_subsets, 
                                                                                                                                        datasets, 
@@ -257,6 +258,9 @@ def main(models_from_file = 1):
                                                                                                                                        use_test_set = 1)
 
         dump(estimators_on_feature_subsets, dirs["output_models_dir"]+'estimators-on-feature-subsets.joblib')
+=======
+        performances_on_feature_subsets, cv_scores_on_feature_subsets, optimal_thresholds = models.get_performances_on_feature_subsets(feature_subsets, datasets, best_estimators, use_test_set = 1)
+>>>>>>> f815055 (replace classifier with estimator in var names)
         dump(performances_on_feature_subsets, dirs["output_reports_dir"]+'performances-on-feature-subsets.joblib')
         dump(cv_scores_on_feature_subsets, dirs["output_reports_dir"]+'cv-scores-on-feature-subsets.joblib')
         dump(optimal_thresholds, dirs["output_reports_dir"]+'optimal-thresholds.joblib')

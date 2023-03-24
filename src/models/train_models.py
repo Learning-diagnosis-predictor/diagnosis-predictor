@@ -6,7 +6,7 @@ import pandas as pd
 
 from sklearn.model_selection import StratifiedKFold
 
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestestimator
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression
 
@@ -81,7 +81,7 @@ def set_up_load_directories():
 def get_base_models_and_param_grids():
     
     # Define base models
-    rf = RandomForestClassifier(n_estimators=200 if DEBUG_MODE else 400)
+    rf = RandomForestestimator(n_estimators=200 if DEBUG_MODE else 400)
     svc = svm.SVC()
     lr = LogisticRegression(solver="saga")
     
