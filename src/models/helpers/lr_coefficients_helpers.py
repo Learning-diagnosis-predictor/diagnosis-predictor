@@ -8,9 +8,15 @@ sys.path.insert(0, parentdir)
 import util
 
 def get_coefficients_df_from_lr(pipeline, data):
+<<<<<<< HEAD
     # Get the coefficients from estimator 
     estimator = util.get_estimator_from_pipeline(pipeline)
     coef = estimator.coef_[0]
+=======
+    # Get the coefficients from classifier 
+    classifier = util.get_estimator_from_pipeline(pipeline)
+    coef = classifier.coef_[0]
+>>>>>>> 6ead447 (save lr coefs to reports)
     # Get the feature names
     feature_names = data.columns
     # Create a dataframe of the coefficients and feature names
@@ -40,4 +46,8 @@ def save_coefficients_from_lr(diag, pipeline, data, output_dir):
     coef_dir = output_dir + "coefficients/"
     util.create_dir_if_not_exists(coef_dir)
     ## Save to file
+<<<<<<< HEAD
     df.to_csv(coef_dir + f'{diag}_coefficients.csv', float_format='%.3f', index=False)
+=======
+    df.to_csv(coef_dir + f'{diag}_coefficients.csv', index=False)
+>>>>>>> 6ead447 (save lr coefs to reports)
