@@ -61,7 +61,11 @@ def get_aucs_on_test_set(best_estimators, datasets, use_test_set, diag_cols):
         print(diag)
         print(util.get_base_model_name_from_pipeline(best_estimators[diag]))
         estimator = best_estimators[diag]
+<<<<<<< HEAD
     
+=======
+        
+>>>>>>> f815055 (replace classifier with estimator in var names)
         if use_test_set == 1:
             X, y = datasets[diag]["X_test"], datasets[diag]["y_test"] 
             X_hc, y_hc = datasets[diag]["X_test_only_healthy_controls"], datasets[diag]["y_test_only_healthy_controls"]
@@ -70,6 +74,10 @@ def get_aucs_on_test_set(best_estimators, datasets, use_test_set, diag_cols):
             X_hc, y_hc = datasets[diag]["X_val_only_healthy_controls"], datasets[diag]["y_val_only_healthy_controls"]
 
         roc_auc = get_roc_auc(X, y, estimator)
+<<<<<<< HEAD
+=======
+        aucs[diag] = roc_auc
+>>>>>>> f815055 (replace classifier with estimator in var names)
 
         # Only calculate ROC AUC on healthy controls if diag is not Diag.No Diagnosis Given
         roc_auc_hc = get_roc_auc(X_hc, y_hc, estimator) if diag != "Diag.No Diagnosis Given" else np.nan
@@ -109,9 +117,14 @@ def main(use_test_set=1):
     datasets = load(dirs["input_data_dir"]+'datasets.joblib')
 
     # Print performances of models on validation set
+<<<<<<< HEAD
     roc_aucs = get_roc_aucs(best_estimators, datasets, use_test_set=use_test_set, 
                             diag_cols=diag_cols, input_reports_dir=dirs["input_reports_dir"])
     
+=======
+    roc_aucs = get_roc_aucs(best_estimators, datasets, use_test_set=use_test_set, diag_cols=diag_cols, input_reports_dir=dirs["input_reports_dir"])
+
+>>>>>>> f815055 (replace classifier with estimator in var names)
     if use_test_set == 1:
         roc_aucs.to_csv(dirs["output_reports_dir"]+"performance_table_all_features.csv", float_format='%.3f', index=False)    
 

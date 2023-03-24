@@ -9,6 +9,7 @@ import util
 
 def get_coefficients_df_from_lr(pipeline, data):
 <<<<<<< HEAD
+<<<<<<< HEAD
     # Get the coefficients from estimator 
     estimator = util.get_estimator_from_pipeline(pipeline)
     coef = estimator.coef_[0]
@@ -17,6 +18,11 @@ def get_coefficients_df_from_lr(pipeline, data):
     classifier = util.get_estimator_from_pipeline(pipeline)
     coef = classifier.coef_[0]
 >>>>>>> 6ead447 (save lr coefs to reports)
+=======
+    # Get the coefficients from estimator 
+    estimator = util.get_estimator_from_pipeline(pipeline)
+    coef = estimator.coef_[0]
+>>>>>>> f815055 (replace classifier with estimator in var names)
     # Get the feature names
     feature_names = data.columns
     # Create a dataframe of the coefficients and feature names
