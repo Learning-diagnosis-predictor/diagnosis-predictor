@@ -92,11 +92,10 @@ def get_relevant_id_cols_by_popularity(assessment_answer_counts, relevant_assess
     # Get relevant assessments: 
     #   relevant cognitive tests, Questionnaire Measures of Emotional and Cognitive Status, and 
     #   Questionnaire Measures of Family Structure, Stress, and Trauma (from Assessment_List_Jan2019.xlsx)
-    relevant_EID_list = [x+",EID" for x in ["Basic_Demos", "PreInt_EduHx", "PreInt_DevHx", "NIH_Scores", "SympChck", "SCQ", "Barratt", 
-        "ASSQ", "ARI_P", "SDQ", "SWAN", "SRS", "CBCL", "ICU_P", "APQ_P", "PCIAT", "DTS", "ESWAN", "MFQ_P", "APQ_SR", 
-        "WHODAS_P", "CIS_P", "PSI", "RBS", "PhenX_Neighborhood", "WHODAS_SR", "CIS_SR", "SCARED_SR", 
+    relevant_EID_list = [x+",EID" for x in ["Basic_Demos", "PreInt_EduHx", "PreInt_DevHx", "SympChck", "SCQ", "Barratt", 
+        "ASSQ", "ARI_P", "SDQ", "SWAN", "SRS", "CBCL", "ICU_P", "APQ_P", "PCIAT", "IAT", "DTS", "ESWAN", "MFQ_P", "APQ_SR", 
+        "WHODAS_P", "CIS_P", "PSI", "RBS", "PhenX_Neighborhood", "WHODAS_SR", "CIS_SR", "SCARED_P", "SCARED_SR", 
         "C3SR", "CCSC", "CPIC", "YSR", "PhenX_SchoolRisk", "CBCL_Pre", "SRS_Pre", "ASR"] + list(cog_task_cols.keys())]
-    print(relevant_EID_list)
 
 >>>>>>> 64f2e10 (merge changes from main):src/data/make_dataset.py
     # Get relevant ID columns sorted by popularity    
@@ -313,6 +312,7 @@ def export_datasets(data_up_to_dropped_item_lvl, data_up_to_dropped_total_scores
     data_up_to_dropped_item_lvl.to_csv(data_output_dir + "item_lvl.csv", index=False)
     data_up_to_dropped_subscale_scores.to_csv(data_output_dir + "subscale_scores.csv", index=False)
     data_up_to_dropped_total_scores.to_csv(data_output_dir + "total_scores.csv", index=False)
+<<<<<<< HEAD:src/data/helpers/make_full_dataset.py
 
 def make_full_dataset(only_assessment_distribution, first_assessment_to_drop, only_free_assessments, dirs):
 
@@ -322,6 +322,8 @@ def make_full_dataset(only_assessment_distribution, first_assessment_to_drop, on
     data_up_to_SCARED_item_lvl_w_impairment.to_csv(data_output_dir + "item_lvl_w_impairment.csv", index=False)
     data_up_to_SCARED_subscale_scores_w_impairment.to_csv(data_output_dir + "subscale_scores_w_impairment.csv", index=False)
     data_up_to_SCARED_total_scores_w_impairment.to_csv(data_output_dir + "total_scores_w_impairment.csv", index=False)
+=======
+>>>>>>> 6e1690f (get make_dataset changes from PCIAT (missing subscales, no impairment)):src/data/make_dataset.py
 
 def main(only_assessment_distribution, first_assessment_to_drop):
     only_assessment_distribution = int(only_assessment_distribution)
@@ -407,7 +409,11 @@ def main(only_assessment_distribution, first_assessment_to_drop):
         data_up_to_dropped = data_up_to_dropped.drop(EID_columns_until_dropped, axis=1)
 
         data_up_to_dropped = drop_unused_output_cols(data_up_to_dropped, cog_task_cols)
+<<<<<<< HEAD:src/data/helpers/make_full_dataset.py
 
+=======
+        
+>>>>>>> 6e1690f (get make_dataset changes from PCIAT (missing subscales, no impairment)):src/data/make_dataset.py
         # Aggregare demographics input columns: remove PER parent data from Barratt, only keep aggregated scores
         if "Barratt,Barratt_P1_Edu" in data_up_to_dropped.columns:
             data_up_to_dropped = data_up_to_dropped.drop(["Barratt,Barratt_P1_Edu", "Barratt,Barratt_P1_Occ", "Barratt,Barratt_P2_Edu", "Barratt,Barratt_P2_Occ"], axis=1)
@@ -453,4 +459,12 @@ def main(only_assessment_distribution, first_assessment_to_drop):
             data_up_to_dropped_subscale_scores)
 
         # Export final datasets
+<<<<<<< HEAD:src/data/helpers/make_full_dataset.py
         export_datasets(data_up_to_dropped_item_lvl, data_up_to_dropped_total_scores, data_up_to_dropped_subscale_scores, dirs["data_output_dir"])
+=======
+        export_datasets(data_up_to_dropped_item_lvl, data_up_to_dropped_total_scores, data_up_to_dropped_subscale_scores, data_output_dir)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1], sys.argv[2])
+>>>>>>> 6e1690f (get make_dataset changes from PCIAT (missing subscales, no impairment)):src/data/make_dataset.py
