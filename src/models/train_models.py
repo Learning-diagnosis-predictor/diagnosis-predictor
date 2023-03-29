@@ -6,7 +6,7 @@ import pandas as pd
 
 from sklearn.model_selection import StratifiedKFold
 
-from sklearn.ensemble import RandomForestestimator
+from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression
 
@@ -88,7 +88,7 @@ def set_up_load_directories():
 def get_base_models_and_param_grids():
     
     # Define base models
-    rf = RandomForestestimator(n_estimators=200 if DEBUG_MODE else 400)
+    rf = RandomForestClassifier(n_estimators=200 if DEBUG_MODE else 400)
     svc = svm.SVC()
     lr = LogisticRegression(solver="saga")
     
@@ -260,7 +260,7 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 0, models_from_fi
         "New Diag.Borderline Intellectual Functioning",
         "New Diag.Processing Speed Deficit"
     ]
-    full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl_w_impairment.csv")
+    full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl.csv")
     full_dataset = features.make_new_diag_cols(full_dataset, diag_cols)
 
     # Print shape of dataset
@@ -277,7 +277,7 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 0, models_from_fi
         diag_cols = diag_cols
     print(diag_cols)
 
-    full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl_w_impairment.csv")
+    full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl.csv")
     full_dataset = features.make_new_diag_cols(full_dataset, diag_cols)
 
     if models_from_file == 1:

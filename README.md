@@ -7,6 +7,7 @@ Predicting learning diagnoses from HBN:
 - Specific Learning Disorder with Impairment in Written Expression
 - Intellectual Disability-Mild
 - Borderline Intellectual Functioning
+- Processing Speed Deficit (not consensus diagnosis, only cognitive task scores)
 
 ## 1 step:
 
