@@ -83,9 +83,11 @@ def append_feature_names_to_feature_subsets(feature_subsets):
                 and not x.endswith("WAS_MISSING")
                 and not x.endswith("financialsupport") # Not in data dictionary
                 and not x.endswith("Panic_A01A") # Not in data dictionary
-                and not x.endswith("Panic_A02A")
-                and not x.endswith("Panic_A02A") 
-                and not x.endswith("Panic_A02B")]
+                and not x.endswith("Panic_A01B") # Not in data dictionary
+                and not x.endswith("Panic_A02A") # Not in data dictionary
+                and not x.endswith("Panic_A02B") # Not in data dictionary
+                and not x == "preg_symp"
+                ]
     return feature_subsets_with_names
 
 def write_feature_subsets_to_text_file(feature_subsets, output_reports_dir):
