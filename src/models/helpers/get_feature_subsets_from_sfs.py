@@ -1,6 +1,6 @@
 from sklearn.model_selection import StratifiedKFold
 
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 def get_sfs_object(diag, best_estimators, number_of_features_to_check, X_train, y_train):
     from mlxtend.feature_selection import SequentialFeatureSelector

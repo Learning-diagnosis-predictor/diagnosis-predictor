@@ -301,10 +301,14 @@ def separate_item_lvl_from_scale_scores(data_up_to_dropped, columns_until_droppe
     # Item level columns = all columns except those of total and subscale scores (includes diag cols)
     item_level_cols = [x for x in columns_until_dropped if (x not in total_score_cols_w_raw) and (x not in subscale_score_cols_w_raw)]
     item_level_col_subset = [x for x in data_up_to_dropped.columns if (x not in total_score_cols_w_raw) and (x not in subscale_score_cols_w_raw)]
+    # Exception for NVLD, uses CBCL_SP_T and ASSQ_Total:
+    item_level_col_subset += ["CBCL,CBCL_SP_T", "ASSQ,ASSQ_Total"]
     data_up_to_dropped_item_lvl = data_up_to_dropped[item_level_col_subset]
 
     # Total columns = all columns except those for item_level (calculated above), all subscale scores, and raw total scores (only keep t-scores)
     total_score_col_subset = [x for x in data_up_to_dropped.columns if (x not in item_level_cols) and (x not in subscale_score_cols_w_raw) and (x not in total_score_raw_cols)]
+    # Exception for NVLD, uses CBCL_SP_T and ASSQ_Total:
+    item_level_col_subset += ["CBCL,CBCL_SP_T", "ASSQ,ASSQ_Total"]
     data_up_to_dropped_total_scores = data_up_to_dropped[total_score_col_subset]
 
     # Subscale columns = all columns except those for item_level (calculated above), all total scores, and raw subscale scores (only keep t-scores)
@@ -340,7 +344,7 @@ def main(only_assessment_distribution, first_assessment_to_drop):
     only_assessment_distribution = int(only_assessment_distribution)
 
     data_statistics_dir, data_output_dir = set_up_directories(first_assessment_to_drop)
-    cog_task_cols = {"WISC": ["WISC,WISC_FSIQ", "WISC,WISC_PSI"], "WIAT": ["WIAT,WIAT_Num_Stnd", "WIAT,WIAT_Word_Stnd"]}
+    cog_task_cols = {"WISC": ["WISC,WISC_FSIQ", "WISC,WISC_PSI", "WISC,WISC_VCI", "WISC,WISC_VSI"], "WIAT": ["WIAT,WIAT_Num_Stnd", "WIAT,WIAT_Word_Stnd", "WIAT,WIAT_Word_P", "WIAT,WIAT_Num_P"]}
 
     # LORIS saved query (all data)
     full = pd.read_csv("data/raw/LORIS-release-10.csv", dtype=object)
@@ -455,6 +459,9 @@ def main(only_assessment_distribution, first_assessment_to_drop):
 
         # Export final datasets
         export_datasets(data_up_to_dropped_item_lvl, data_up_to_dropped_total_scores, data_up_to_dropped_subscale_scores, data_output_dir)
+
+        # DEBUG
+        print(data_up_to_dropped_item_lvl["Basic_Demos,Age"].describe())
 
 
 if __name__ == "__main__":

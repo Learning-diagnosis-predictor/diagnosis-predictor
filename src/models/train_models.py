@@ -215,7 +215,7 @@ def find_best_estimators_and_scores(datasets, diag_cols, performance_margin):
 
         if DEBUG_MODE and util.get_base_model_name_from_pipeline(best_estimators[diag]) == "logisticregression":
             # In debug mode print top features from LR
-            models.print_top_features_from_lr(best_estimators[diag], X_train, 10)
+            models.print_top_features_from_lr(best_estimators[diag], X_train, 100)
             
     return best_estimators, scores_of_best_estimators, sds_of_scores_of_best_estimators
 
@@ -258,7 +258,8 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 0, models_from_fi
         "New Diag.Specific Learning Disorder with Impairment in Written Expression",
         "New Diag.Intellectual Disability-Mild",
         "New Diag.Borderline Intellectual Functioning",
-        "New Diag.Processing Speed Deficit"
+        "New Diag.Processing Speed Deficit",
+        "New Diag.NVLD"
     ]
     full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl.csv")
     full_dataset = features.make_new_diag_cols(full_dataset, diag_cols)
@@ -272,9 +273,8 @@ def main(performance_margin = 0.02, use_other_diags_as_input = 0, models_from_fi
     split_percentage = 0.2
     diag_cols = find_diags_w_enough_positive_examples_in_val_set(full_dataset, diag_cols, split_percentage, min_pos_examples_val_set)
     if DEBUG_MODE: # Only use first two diagnoses for debugging
-        print(diag_cols)
         #diag_cols = diag_cols[-1:]
-        diag_cols = diag_cols
+        print(diag_cols)
     print(diag_cols)
 
     full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl.csv")

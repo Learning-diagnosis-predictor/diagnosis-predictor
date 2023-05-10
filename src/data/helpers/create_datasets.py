@@ -11,6 +11,11 @@ def customize_input_cols_per_diag(input_cols, diag):
         input_cols = [x for x in input_cols if x not in ["New Diag.Borderline Intellectual Functioning", get_cons_diag_col_name_from_new_diag("New Diag.Borderline Intellectual Functioning")]]
     if diag == "New Diag.Borderline Intellectual Functioning":
         input_cols = [x for x in input_cols if x not in ["New Diag.Intellectual Disability-Mild", get_cons_diag_col_name_from_new_diag("New Diag.Intellectual Disability-Mild")]]
+    if diag == "New Diag.NVLD":
+        input_cols = [x for x in input_cols if 
+                        not x.startswith("ASSQ")
+                        and not x.startswith("CBCL")
+                        ]
     
     return input_cols
 
@@ -24,7 +29,8 @@ def get_input_and_output_cols_for_diag(full_dataset, diag, use_other_diags_as_in
                         and not x == "Diag.No Diagnosis Given"
                         and not x.startswith("New Diag.")
                         and not x == get_cons_diag_col_name_from_new_diag(diag)
-                        and not x == diag]
+                        and not x == diag
+                        and not x in ["CBCL,CBCL_SP_T", "ASSQ_Total"]]
     else:
         input_cols = [x for x in full_dataset.columns if 
                         not x in ["WHODAS_P,WHODAS_P_Total", "CIS_P,CIS_P_Score", "WHODAS_SR,WHODAS_SR_Score", "CIS_SR,CIS_SR_Total"]
@@ -33,9 +39,11 @@ def get_input_and_output_cols_for_diag(full_dataset, diag, use_other_diags_as_in
                         and not x == "Diag.No Diagnosis Given"
                         and not x.startswith("New Diag.")
                         and not x == get_cons_diag_col_name_from_new_diag(diag)
-                        and not x.startswith("Diag.")]
+                        and not x.startswith("Diag.")
+                        and not x in ["CBCL,CBCL_SP_T", "ASSQ_Total"]]
 
     input_cols = customize_input_cols_per_diag(input_cols, diag)
+    print("Input assessemnts used: ", list(set([x.split(",")[0] for x in input_cols])))
     
     output_col = diag
     
