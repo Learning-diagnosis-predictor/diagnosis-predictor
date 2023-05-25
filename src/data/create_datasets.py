@@ -16,7 +16,8 @@ def build_output_dir_name(first_assessment_to_drop, use_other_diags_as_input, on
     datetime_part = util.get_string_with_current_datetime()
 
     # Part with the params
-    params = {"first_assessment_to_drop": first_assessment_to_drop, "use_other_diags_as_input": use_other_diags_as_input, 
+    params = {"first_assessment_to_drop": first_assessment_to_drop, 
+              "use_other_diags_as_input": use_other_diags_as_input, 
               "only_free_assessments": only_free_assessments}
     params_part = util.build_param_string_for_dir_name(params)
     
@@ -25,7 +26,7 @@ def build_output_dir_name(first_assessment_to_drop, use_other_diags_as_input, on
 def set_up_directories(first_assessment_to_drop, use_other_diags_as_input, only_free_assessments):
 
     # Create directory in the parent directory of the project (separate repo) for output data, models, and reports
-    data_dir = "../diagnosis_predictor_data/"
+    data_dir = "../learning_diagnosis_predictor_data/"
     util.create_dir_if_not_exists(data_dir)
 
     # Create directory inside the output directory with the run timestamp and first_assessment_to_drop param
@@ -40,41 +41,37 @@ def set_up_directories(first_assessment_to_drop, use_other_diags_as_input, only_
 
     return {"data_statistics_dir": data_statistics_dir, "data_output_dir": data_output_dir}
 
+def get_cons_diag_col_name_from_new_diag(new_diag):
+    return new_diag.replace("New Diag.", "Diag.")
+
 def customize_input_cols_per_diag(input_cols, diag):
     # Remove "Diag.Intellectual Disability-Mild" when predicting "Diag.Borderline Intellectual Functioning"
     #   and vice versa because they are highly correlated, same for other diagnoses
     
-    if diag == "Diag.Intellectual Disability-Mild":
-        input_cols = [x for x in input_cols if x != "Diag.Borderline Intellectual Functioning"]
-    if diag == "Diag.Borderline Intellectual Functioning":
-        input_cols = [x for x in input_cols if x != "Diag.Intellectual Disability-Mild"]
-    if diag == "Diag.No Diagnosis Given":
-        input_cols = [x for x in input_cols if not x.startswith("Diag.")]
-    if diag == "Diag.ADHD-Combined Type":
-        input_cols = [x for x in input_cols if x not in ["Diag.ADHD-Inattentive Type", 
-                                                         "Diag.ADHD-Hyperactive/Impulsive Type",
-                                                         "Diag.Other Specified Attention-Deficit/Hyperactivity Disorder",
-                                                         "Diag.Unspecified Attention-Deficit/Hyperactivity Disorder"]]
-    if diag == "Diag.ADHD-Inattentive Type":
-        input_cols = [x for x in input_cols if x not in ["Diag.ADHD-Combined Type", 
-                                                         "Diag.ADHD-Hyperactive/Impulsive Type",
-                                                         "Diag.Other Specified Attention-Deficit/Hyperactivity Disorder",
-                                                         "Diag.Unspecified Attention-Deficit/Hyperactivity Disorder"]]
-                      
+    if diag == "New Diag.Intellectual Disability-Mild":
+        input_cols = [x for x in input_cols if x not in ["New Diag.Borderline Intellectual Functioning", get_cons_diag_col_name_from_new_diag("New Diag.Borderline Intellectual Functioning")]]
+    if diag == "New Diag.Borderline Intellectual Functioning":
+        input_cols = [x for x in input_cols if x not in ["New Diag.Intellectual Disability-Mild", get_cons_diag_col_name_from_new_diag("New Diag.Intellectual Disability-Mild")]]
+    
     return input_cols
 
 def get_input_cols_per_diag(full_dataset, diag, use_other_diags_as_input):
     
     if use_other_diags_as_input == 1:
         input_cols = [x for x in full_dataset.columns if 
-                            not x in ["WHODAS_P,WHODAS_P_Total", "CIS_P,CIS_P_Score", "WHODAS_SR,WHODAS_SR_Score", "CIS_SR,CIS_SR_Total"]
-                            and not x == diag
-                            and not x == "Diag.No Diagnosis Given"]
+                        not x.startswith("WIAT")
+                        and not x.startswith("WISC")
+                        and not x == "Diag.No Diagnosis Given"
+                        and not x == get_cons_diag_col_name_from_new_diag(diag)
+                        and not x == diag]
     else:
         input_cols = [x for x in full_dataset.columns if 
-                            not x in ["WHODAS_P,WHODAS_P_Total", "CIS_P,CIS_P_Score", "WHODAS_SR,WHODAS_SR_Score", "CIS_SR,CIS_SR_Total"]
-                            and not x.startswith("Diag.")]
-    
+                        not x.startswith("WIAT")
+                        and not x.startswith("WISC")
+                        and not x.startswith("New Diag.")
+                        and not x == get_cons_diag_col_name_from_new_diag(diag)
+                        and not x.startswith("Diag.")]
+
     input_cols = customize_input_cols_per_diag(input_cols, diag)
     print("Input assessemnts used: ", list(set([x.split(",")[0] for x in input_cols])))
     

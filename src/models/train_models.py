@@ -25,7 +25,7 @@ from joblib import load, dump
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
-import util, data, models, features
+import util, models
 
 DEBUG_MODE = True
 
@@ -47,6 +47,7 @@ def set_up_directories():
 
     # Input dirs
     input_data_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "data/create_datasets/")
+    print("Reading data from: ", input_data_dir)
 
     # Create directory inside the output directory with the run timestamp and params:
     #    - [params from create_datasets.py]
@@ -237,9 +238,6 @@ def main(performance_margin = 0.02, models_from_file = 1):
     if DEBUG_MODE:
         #diag_cols = diag_cols[0:2]
         pass
-
-    full_dataset = pd.read_csv(dirs["input_data_dir"] + "item_lvl.csv")
-    full_dataset = features.make_new_diag_cols(full_dataset, diag_cols)
 
     if models_from_file == 1:
         
