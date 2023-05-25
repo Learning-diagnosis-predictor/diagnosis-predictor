@@ -1,8 +1,4 @@
 def make_new_diag_cols(data):
-    data["Diag.Any Diag"] = data["Diag.No Diagnosis Given"].apply(lambda x: 1 if x == 0 else 0)
-    return data
-
-def make_new_diag_cols(data, diag_cols):
 
     # Create new diganosis columns: positive if consensus diagnosis is positive OR if WIAT or WISC score is within range
     data["New Diag.Specific Learning Disorder with Impairment in Reading"] = (data["WIAT,WIAT_Word_Stnd"] < 85) | (data["Diag.Specific Learning Disorder with Impairment in Reading"] == 1)

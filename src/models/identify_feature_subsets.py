@@ -34,24 +34,26 @@ def set_up_directories():
 
     # Input dirs
     input_data_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "data/create_datasets/")
+    print("Reading data from: " + input_data_dir)
+    models_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "models/train_models/")
+    print("Reading models from: " + models_dir)
+    input_reports_dir = models.get_newest_non_empty_dir_in_dir(data_dir+ "reports/train_models/")
+    print("Reading reports from: " + input_reports_dir)
 
-    # Create directory inside the output directory with the run timestamp and params:
-    #    - [params from create_datasets.py]
-    #    - use other diags as input
-    #    - debug mode
-    params_from_create_datasets = models.get_params_from_current_data_dir_name(input_data_dir)
-    current_output_dir_name = build_output_dir_name(params_from_create_datasets)
+    # Output dirs
+    params_from_previous_script = models.get_params_from_current_data_dir_name(input_data_dir)
+    current_output_dir_name = build_output_dir_name(params_from_previous_script)
 
-    output_data_dir = data_dir + "data/create_datasets/" + current_output_dir_name + "/"
-    util.create_dir_if_not_exists(output_data_dir)
+    output_reports_dir = data_dir + "reports/" + "identify_feature_subsets/" + current_output_dir_name + "/"
+    util.create_dir_if_not_exists(output_reports_dir)
 
-    models_dir = data_dir + "models/" + "train_models/" + current_output_dir_name + "/"
-    util.create_dir_if_not_exists(models_dir)
+    output_models_dir = data_dir + "models/" + "identify_feature_subsets/" + current_output_dir_name + "/"
+    util.create_dir_if_not_exists(output_models_dir)
 
-    reports_dir = data_dir + "reports/" + "train_models/" + current_output_dir_name + "/"
-    util.create_dir_if_not_exists(reports_dir) 
+    print("DEBUG", params_from_previous_script, current_output_dir_name, output_reports_dir, output_models_dir)
 
-    return {"input_data_dir": input_data_dir, "output_data_dir": output_data_dir, "models_dir": models_dir, "reports_dir": reports_dir}
+    return {"input_data_dir": input_data_dir,  "models_dir": models_dir, "input_reports_dir": input_reports_dir, 
+            "output_reports_dir": output_reports_dir, "output_models_dir": output_models_dir}
 
 def set_up_load_directories():
     # When loading existing models, can't take the newest directory, we just created it, it will be empty. 
@@ -59,11 +61,10 @@ def set_up_load_directories():
 
     data_dir = "../learning_diagnosis_predictor_data/"
     
-    load_data_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "data/create_datasets/")
     load_models_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "models/train_models/")
     load_reports_dir = models.get_newest_non_empty_dir_in_dir(data_dir + "reports/train_models/")
     
-    return {"load_data_dir": load_data_dir, "load_models_dir": load_models_dir, "load_reports_dir": load_reports_dir}
+    return {"load_models_dir": load_models_dir, "load_reports_dir": load_reports_dir}
     
 
 def get_feature_subsets(best_estimators, datasets, number_of_features_to_check, dirs):
@@ -73,8 +74,6 @@ def get_feature_subsets(best_estimators, datasets, number_of_features_to_check, 
         base_model = util.get_estimator_from_pipeline(best_estimators[diag])
         print(diag, base_model_type, f'{i+1}/{len(best_estimators)}')
         if DEBUG_MODE and base_model_type != "logisticregression": # Don't do RF models in debug mode, takes long
-            continue
-        if DEBUG_MODE and diag != "Diag.Specific Learning Disorder with Impairment in Reading": ################################# DEBUG
             continue
         # If base model is exposes feature importances, use RFE to get first 50 feature, then use SFS to get the rest.
         if not (base_model_type == "svc" and base_model.kernel != "linear"):
