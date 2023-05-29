@@ -179,9 +179,14 @@ def add_missingness_markers(data_up_to_dropped, n, missing_values_df):
         data_up_to_dropped[col+ "_WAS_MISSING"] = data_up_to_dropped[col].isna()
     return data_up_to_dropped
 
-def remove_cols_w_missing_output_cols(data_up_to_dropped, cog_task_cols):
+def remove_rows_w_missing_output_cols(data_up_to_dropped, cog_task_cols):
     for battery in cog_task_cols.keys():
-        data_up_to_dropped = data_up_to_dropped.dropna(subset = cog_task_cols[battery])    
+        # Get list of rows to drop (where battery column is NA)
+        rows_to_drop = data_up_to_dropped[data_up_to_dropped[cog_task_cols[battery]].isna().all(axis=1)].index
+        # Drop rows
+        data_up_to_dropped = data_up_to_dropped.drop(rows_to_drop)
+        # Print number of rows dropped
+        print("Dropped " + str(len(rows_to_drop)) + " rows where " + battery + " was missing")
     return data_up_to_dropped
 
 def transform_dx_cols(data_up_to_dropped):
@@ -425,7 +430,7 @@ def make_full_dataset(only_assessment_distribution, first_assessment_to_drop, on
         # Add missingness marker for columns with more than 5% missing data 
         data_up_to_dropped = add_missingness_markers(data_up_to_dropped, 5, missing_values_df)
 
-        data_up_to_dropped = remove_cols_w_missing_output_cols(data_up_to_dropped, cog_task_cols)
+        data_up_to_dropped = remove_rows_w_missing_output_cols(data_up_to_dropped, cog_task_cols)
 
         # Transform diagnosis columns
         data_up_to_dropped = transform_dx_cols(data_up_to_dropped)
