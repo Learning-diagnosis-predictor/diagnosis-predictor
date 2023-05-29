@@ -12,7 +12,7 @@ Predicting learning diagnoses from HBN:
 
 ## 1 step:
 
-`python -W ignore src/data/create_datasets.py 0 CPIC 0 0`
+`python -W ignore src/data/create_datasets.py 0 CCSC 0 0`
 
 Arguments: only_assessment_distribution, first_assessment_to_drop, use_other_diags_as_input = 0, only_free_assessments = 0
 
