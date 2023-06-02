@@ -321,7 +321,7 @@ def export_datasets(data_up_to_dropped_item_lvl, data_up_to_dropped_total_scores
 
 def make_full_dataset(only_assessment_distribution, first_assessment_to_drop, only_free_assessments, dirs):
 
-    cog_task_cols = {"WISC": ["WISC,WISC_FSIQ", "WISC,WISC_PSI"], "WIAT": ["WIAT,WIAT_Num_Stnd", "WIAT,WIAT_Word_Stnd"]}
+    cog_task_cols = {"WISC": ["WISC,WISC_FSIQ", "WISC,WISC_PSI"], "WIAT": ["WIAT,WIAT_Num_Stnd", "WIAT,WIAT_Word_Stnd", "WIAT,WIAT_Spell_Stnd"]}
 
     # Get relevant assessments: 
     #   relevant cognitive tests, Questionnaire Measures of Emotional and Cognitive Status, and 
