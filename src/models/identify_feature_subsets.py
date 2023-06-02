@@ -41,7 +41,7 @@ def set_up_directories():
     print("Reading reports from: " + input_reports_dir)
 
     # Output dirs
-    params_from_previous_script = models.get_params_from_current_data_dir_name(input_data_dir)
+    params_from_previous_script = models.get_params_from_current_data_dir_name(models_dir)
     current_output_dir_name = build_output_dir_name(params_from_previous_script)
 
     output_reports_dir = data_dir + "reports/" + "identify_feature_subsets/" + current_output_dir_name + "/"
@@ -75,7 +75,7 @@ def get_feature_subsets(best_estimators, datasets, number_of_features_to_check, 
         print(diag, base_model_type, f'{i+1}/{len(best_estimators)}')
         if DEBUG_MODE and base_model_type != "logisticregression": # Don't do RF models in debug mode, takes long
             continue
-        # If base model is exposes feature importances, use RFE to get first 50 feature, then use SFS to get the rest.
+        # If base model exposes feature importances, use RFE to get first 50 feature, then use SFS to get the rest.
         if not (base_model_type == "svc" and base_model.kernel != "linear"):
             feature_subsets[diag] = models.get_feature_subsets_from_rfe_then_sfs(diag, best_estimators, datasets, number_of_features_to_check)
         # If base model doesn't expose feature importances, use SFS to get feature subsets directly (will take very long)
