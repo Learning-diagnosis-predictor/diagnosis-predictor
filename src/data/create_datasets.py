@@ -177,7 +177,7 @@ def main(only_assessment_distribution, first_assessment_to_drop, use_other_diags
 
         # Get list of column names with "Diag." prefix, where number of 
         # positive examples is > threshold
-        min_pos_examples_val_set = 20
+        min_pos_examples_val_set = 10
         split_percentage = 0.2
         
         all_diags = [col for col in full_dataset.columns if col.startswith("New Diag.")]

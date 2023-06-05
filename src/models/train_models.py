@@ -131,7 +131,7 @@ def get_base_models_and_param_grids():
     return base_models_and_param_grids
 
 def get_best_estimator(base_model, grid, X_train, y_train):
-    cv = StratifiedKFold(n_splits=3 if DEBUG_MODE else 8)
+    cv = StratifiedKFold(n_splits=8 if DEBUG_MODE else 8) # Increase number of folds in this branch to reduce variance (not a lot of diagnoses so vaiance is a big problem)
     rs = RandomizedSearchCV(estimator=base_model, param_distributions=grid, cv=cv, scoring="roc_auc", n_iter=50 if DEBUG_MODE else 200, n_jobs = -1, verbose=1)
     
     print("Fitting", base_model, "...")
@@ -237,6 +237,7 @@ def main(performance_margin = 0.02, models_from_file = 1):
 
     if DEBUG_MODE:
         #diag_cols = diag_cols[0:2]
+        #diag_cols = ["New Diag.Specific Learning Disorder with Impairment in Mathematics"]
         pass
 
     if models_from_file == 1:
