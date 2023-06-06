@@ -176,13 +176,15 @@ def main(only_assessment_distribution, first_assessment_to_drop, use_other_diags
         print("Full dataset shape: Number of rows: ", full_dataset.shape[0], "Number of columns: ", full_dataset.shape[1])
 
         # Get list of column names with "Diag." prefix, where number of 
-        # positive examples is > threshold
+        # positive gitexamples is > threshold
         min_pos_examples_val_set = 20
         split_percentage = 0.2
+        
         all_diags = [col for col in full_dataset.columns if col.startswith("New Diag.")]
         positive_examples_in_ds = get_positive_examples_in_ds(full_dataset, all_diags)
-        
+
         diag_cols = find_diags_w_enough_positive_examples_in_val_set(positive_examples_in_ds, all_diags, split_percentage, min_pos_examples_val_set)
+        print("Diagnoses with enough positive examples in validation set: ", diag_cols)
 
         # Create datasets for each diagnosis (different input and output columns)
         datasets = split_datasets_per_diag(full_dataset, diag_cols, split_percentage, use_other_diags_as_input)

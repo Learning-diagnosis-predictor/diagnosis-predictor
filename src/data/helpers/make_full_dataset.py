@@ -243,7 +243,7 @@ def separate_item_lvl_from_scale_scores(data_up_to_dropped, columns_until_droppe
                         "SCARED_P,SCARED_P_Total",
                         "SCARED_SR,SCARED_SR_Total",
                         "WHODAS_SR,WHODAS_SR_Score", 
-                        "CIS_SR,CIS_SR_Total" 
+                        "CIS_SR,CIS_SR_Total", 
                         # "C3SR,C3SR_Total", # Doesn't have a total
                         # "CCSC,CCSC_Total",  # Doesn't have a total
                         # "CPIC,CPIC_Total", # Doesn't have a total
