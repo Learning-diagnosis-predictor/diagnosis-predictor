@@ -14,7 +14,7 @@ import sys
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
-import util
+import util, features
 
 def remove_proprietary_assessments(relevant_assessment_list):
     proprietary_assessments = ["ASR", "CBCL", "CBCL_Pre", "C3SR", "PCIAT", "RBS", "SCQ", "SRS", "SRS_Pre", "YSR", "Barratt", "PSI"]
@@ -163,6 +163,7 @@ def convert_numeric_col_to_numeric_type(col):
 
 def get_missing_values_df(data_up_to_dropped):
     missing_report_up_to_dropped = data_up_to_dropped.isna().sum().to_frame(name="Amount missing")
+    print("DEBUG", missing_report_up_to_dropped, missing_report_up_to_dropped.index)
     missing_report_up_to_dropped["Persentage missing"] = missing_report_up_to_dropped["Amount missing"]/data_up_to_dropped["ID"].nunique() * 100
     missing_report_up_to_dropped = missing_report_up_to_dropped[~missing_report_up_to_dropped.index.str.contains("Diagnosis_ClinicianConsensus")] # remove dx because it's expected to be missing
     missing_report_up_to_dropped = missing_report_up_to_dropped[missing_report_up_to_dropped["Persentage missing"] > 0]
@@ -200,20 +201,6 @@ def transform_dx_cols(data_up_to_dropped):
         
     # Drop original diag columns
     data_up_to_dropped = data_up_to_dropped.drop(og_diag_cols, axis=1)
-
-    return data_up_to_dropped
-
-def transform_devhx_eduhx_cols(data_up_to_dropped):
-
-    list_of_preg_symp_cols = [x for x in data_up_to_dropped.columns if "preg_symp" in x]
-    
-    # If any of the preg_symp columns are 1, then the preg_symp column is 1
-    data_up_to_dropped["preg_symp"] = (data_up_to_dropped[list_of_preg_symp_cols] == 1).any(axis=1)
-
-    # Drop original preg_symp columns
-    data_up_to_dropped = data_up_to_dropped.drop(list_of_preg_symp_cols, axis=1) 
-
-    data_up_to_dropped = data_up_to_dropped.drop(["PreInt_EduHx,NeuroPsych", "PreInt_EduHx,IEP", "PreInt_EduHx,learning_disability", "PreInt_EduHx,EI", "PreInt_EduHx,CPSE"], axis=1)
 
     return data_up_to_dropped
 
@@ -326,7 +313,8 @@ def make_full_dataset(only_assessment_distribution, first_assessment_to_drop, on
     # Get relevant assessments: 
     #   relevant cognitive tests, Questionnaire Measures of Emotional and Cognitive Status, and 
     #   Questionnaire Measures of Family Structure, Stress, and Trauma (from Assessment_List_Jan2019.xlsx)
-    relevent_assessments_list = ["Basic_Demos", "PreInt_EduHx", "PreInt_DevHx", "NIH_Scores", "SympChck", "SCQ", "Barratt", 
+    relevent_assessments_list = ["Basic_Demos", "PreInt_EduHx", "PreInt_DevHx", "PreInt_TxHx", "PreInt_Lang", "PreInt_FamHx", "PreInt_FamHx_RDC", 
+                                 "PreInt_Demos_Home", "PreInt_Demos_Fam", "NIH_Scores", "SympChck", "SCQ", "Barratt", 
         "ASSQ", "ARI_P", "SDQ", "SWAN", "SRS", "CBCL", "ICU_P", "ICU_SR", "PANAS", "APQ_P", "PCIAT", "DTS", "ESWAN", "MFQ_P", "APQ_SR", 
         "WHODAS_P", "CIS_P", "SAS", "PSI", "RBS", "PhenX_Neighborhood", "WHODAS_SR", "CIS_SR", "SCARED_P", "SCARED_SR", 
         "C3SR", "CCSC", "CPIC", "YSR", "PhenX_SchoolRisk", "CBCL_Pre", "SRS_Pre", "ASR"] + list(cog_task_cols.keys())
@@ -406,7 +394,7 @@ def make_full_dataset(only_assessment_distribution, first_assessment_to_drop, on
             data_up_to_dropped = data_up_to_dropped.drop(["Barratt,Barratt_P1_Edu", "Barratt,Barratt_P1_Occ", "Barratt,Barratt_P2_Edu", "Barratt,Barratt_P2_Occ"], axis=1)
 
         # Transform PreInt_DevHx columns
-        data_up_to_dropped = transform_devhx_eduhx_cols(data_up_to_dropped)
+        data_up_to_dropped = features.transform_pre_int_cols(data_up_to_dropped)
 
         # Convert numeric columns to numeric type (all except ID and DX)
         data_up_to_dropped = data_up_to_dropped.apply(lambda col: convert_numeric_col_to_numeric_type(col))

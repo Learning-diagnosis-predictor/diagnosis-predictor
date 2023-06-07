@@ -159,6 +159,8 @@ def save_dataset_stats(datasets, diag_cols, full_dataset, dir):
     stats_df.columns = ["Value"]
     stats_df.to_csv(dir + "dataset_stats.csv")
 
+    full_dataset.describe(include = 'all').T.to_csv(dir + "column_stats_full_dataset.csv")
+
 def main(only_assessment_distribution, first_assessment_to_drop, use_other_diags_as_input, only_free_assessments):
     only_assessment_distribution = int(only_assessment_distribution)
     use_other_diags_as_input = int(use_other_diags_as_input)
