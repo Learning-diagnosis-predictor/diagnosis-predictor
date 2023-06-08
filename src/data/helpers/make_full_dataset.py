@@ -110,9 +110,10 @@ def get_cumul_number_of_examples_df(full_wo_underscore, EID_columns_by_popularit
     for i in range(1, len(EID_columns_by_popularity)+1):
         columns = EID_columns_by_popularity[0:i] # top i assessments
         cumul_number_of_examples = full_wo_underscore[columns].notnull().all(axis=1).sum()
-        cumul_number_of_examples_list.append([cumul_number_of_examples, [x.split(",")[0] for x in columns]])
+        min_age_among_non_null = full_wo_underscore[full_wo_underscore[columns].notnull().all(axis=1)]["Basic_Demos,Age"].min()
+        cumul_number_of_examples_list.append([cumul_number_of_examples, [x.split(",")[0] for x in columns], min_age_among_non_null])
     cumul_number_of_examples_df = pd.DataFrame(cumul_number_of_examples_list)
-    cumul_number_of_examples_df.columns = ("Respondents", "Assessments")
+    cumul_number_of_examples_df.columns = ("Respondents", "Assessments", "Min Age")
     cumul_number_of_examples_df["N of Assessments"] = cumul_number_of_examples_df["Assessments"].str.len()
     cumul_number_of_examples_df["Last Assessment"] = cumul_number_of_examples_df["Assessments"].str[-1]
     return cumul_number_of_examples_df
