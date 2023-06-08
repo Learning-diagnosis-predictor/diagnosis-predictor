@@ -58,8 +58,40 @@ def one_hot_encode_cols(data, cols):
         print("Number of columns after dropping original col: " + str(len(data.columns)))
     return data
 
+def aggregate_pre_int_famhx_rdc(data):
+
+    # Number of siblings - how many osib1age is not NaN
+    data["PreInt_FamHx_RDC,NumSibs"] = (data["PreInt_FamHx_RDC,osib1age"].notnull().astype(int) + 
+                                        data["PreInt_FamHx_RDC,osib2age"].notnull().astype(int) +   
+                                        data["PreInt_FamHx_RDC,osib3age"].notnull().astype(int) +       
+                                        data["PreInt_FamHx_RDC,osib4age_2"].notnull().astype(int) +       
+                                        data["PreInt_FamHx_RDC,osib5age"].notnull().astype(int))          
+
+    # Columns to aggregate
+
+    prefixes = ["PreInt_FamHx_RDC,"+x for x in["f", "m", "sib1", "sib2", "sib3", "sib4", "sib5"]]
+    postfixes = ["dxsev", "attempts", "hospit"]
+    cols_to_agg = [x+y for x in prefixes for y in postfixes if x+y in data.columns]
+
+    for postfix in postfixes:
+        # Aggregate between parents and sibling 
+        cols_to_agg_postfix = [x for x in cols_to_agg if postfix in x and x in data.columns]
+        data["PreInt_FamHx_RDC," + postfix + "_MEAN_parents_siblings"] = data[cols_to_agg_postfix].astype(float).mean(axis=1)
+
+        data = data.drop([x for x in cols_to_agg_postfix], axis=1)
+
+    # Columns to keep as is
+    rdc_cols_to_keep = [
+        ["PreInt_FamHx_RDC,osib1sex", "PreInt_FamHx_RDC,osib1age", "PreInt_FamHx_RDC,omoves1", "PreInt_FamHx_RDC,omoves2", "PreInt_FamHx_RDC,omoves3", "PreInt_FamHx_RDC,ocare1", "PreInt_FamHx_RDC,ocare2", "PreInt_FamHx_RDC,ocare3"] + 
+        [x for x in data.columns if "MEAN_parents_siblings" in x] + 
+        ["PreInt_FamHx_RDC,NumSibs"]]
+    cols_to_drop = [x for x in data.columns if x.startswith("PreInt_FamHx_RDC,") and x not in rdc_cols_to_keep]
+    data = data.drop(cols_to_drop, axis=1)
+
+    return data
+
 def transform_pre_int_cols(data):
-    
+
     data = data.drop(["PreInt_EduHx,NeuroPsych", "PreInt_EduHx,IEP", "PreInt_EduHx,learning_disability"], axis=1)
     # Previous diagnoses and meds: drop DX cols in PreInt_TxHx, drop _dose cols
     data = data.drop([x for x in data.columns if "PreInt_TxHx,Past_DX" in x], axis=1)
@@ -82,6 +114,7 @@ def transform_pre_int_cols(data):
     cols = [x for x in data.columns if "PreInt_DevHx,skill_range_" in x]   
     dict = {"Early": -1, "early": -1, "Normal": 0, "normal": 0, "Late": 1, "late": 1}  
     replace_with_dict_otherwise_nan(data, cols, dict)
+    print("DEBUG", data[data[cols].notna().any(1)][cols].head(10))
 
     # Clearn PreInt_FamHx_RDC cols: in *alive cols, replace everything that is not 1 or 2 with NaN
     cols = [x for x in data.columns if "PreInt_FamHx_RDC" in x and "alive" in x]
@@ -115,82 +148,39 @@ def transform_pre_int_cols(data):
         data = data.drop(ft_col, axis=1)
 
     # Transform weight to lbs
-    data['PreInt_DevHx,birthweight_ozs'] = data['PreInt_DevHx,birthweight_lbs'] * 16 + data['PreInt_DevHx,birthweight_ozs']
+    data['PreInt_DevHx,birthweight_ozs'] = data['PreInt_DevHx,birthweight_lbs'].astype(float) * 16 + data['PreInt_DevHx,birthweight_ozs'].astype(float)    
     data = data.drop(["PreInt_DevHx,birthweight_lbs"], axis=1)
 
     
     # Replce weird no-response flags with nans in PreInt_FamHx_RDC
     cols = [x for x in data.columns if "PreInt_FamHx_RDC" in x]
     for col in cols:
-        # Replace 99 and 999 with NaN
-        data.loc[data[col].astype(str).isin(["99", "999", "9999"]), col] = np.nan # Replace 99 and 999 with NaN
+        # Replace 99, 999, 9999 with NaN
+        data.loc[data[col].astype(str).isin(["99", "999", "9999"]), col] = np.nan # Replace with NaN
 
 
-    # Aggregate PreInt_FamHx_RDC between relatives
-    # Aggregate between parents
-    prefixes = ["PreInt_FamHx_RDC,"+x for x in["f", "m", "sib1", "sib2", "sib3", "sib4", "sib5"]]
-    num_cols_with_prefixes = [x for x in features.get_possibly_numeric_cols(data) if x.startswith(tuple(prefixes)) and 
-                                                                                 not x.endswith(tuple(["info", "age", "height", "weight"]))]
-    postfixes = []
-    for prefix in prefixes:
-        postfixes += [x.replace(prefix, "") for x in num_cols_with_prefixes if x.startswith(prefix)]
-    print("Postfixes to aggregate: ", postfixes)
-    # Take average of columns with the same postfix over all relatives (prefixes)
-    
-    for postfix in postfixes:
-        # Aggregate between grand-grand-parents
-        cols_to_aggregate_ggp = [x for x in num_cols_with_prefixes if 
-                                                              x.endswith(postfix) and
-                                                              x.startswith(tuple(["PreInt_FamHx_RDC,mmm",     
-                                                                            "PreInt_FamHx_RDC,mmf",
-                                                                            "PreInt_FamHx_RDC,mfm",
-                                                                            "PreInt_FamHx_RDC,mff",
-                                                                            "PreInt_FamHx_RDC,fmm",
-                                                                            "PreInt_FamHx_RDC,fmf",
-                                                                            "PreInt_FamHx_RDC,ffm",
-                                                                            "PreInt_FamHx_RDC,fff"])) and 
-                                                                            x in data.columns]
-        data["PreInt_FamHx_RDC," + postfix + "_MEAN_grandgrandparents"] = data[cols_to_aggregate_ggp].mean(axis=1)
-        data = data.drop([x for x in cols_to_aggregate_ggp], axis=1)
-        # Aggregate between grand-parents
-        cols_to_aggregate_gp = [x for x in num_cols_with_prefixes if
-                                                                x.endswith(postfix) and 
-                                                                x.startswith(tuple(["PreInt_FamHx_RDC,mm",
-                                                                            "PreInt_FamHx_RDC,mf",
-                                                                            "PreInt_FamHx_RDC,fm",
-                                                                            "PreInt_FamHx_RDC,ff"])) and 
-                                                                            x in data.columns] # didn't drop yet
-        data["PreInt_FamHx_RDC," + postfix + "_MEAN_grandparents"] = data[cols_to_aggregate_gp].mean(axis=1)
-        data = data.drop([x for x in cols_to_aggregate_gp], axis=1)
-        # Aggregate between parents and sibling (all that are rest)
-        cols_to_aggregate_p = [x for x in num_cols_with_prefixes if 
-                                                                x.endswith(postfix) and
-                                                                x in data.columns] # didn't drop yet
-        data["PreInt_FamHx_RDC," + postfix + "_MEAN_parents"] = data[cols_to_aggregate_p].mean(axis=1)
-        data = data.drop([x for x in cols_to_aggregate_p], axis=1)
-    # Aggregate between siblings
+    data = aggregate_pre_int_famhx_rdc(data)
                                                         
     
-    # Remove all columns containing age over 125
+    # Remove all values with age over 125
     cols = [x for x in data.columns if "Age" in x or "age" in x and not "language" in x and not "skill_age" in x] #Skill ages are in months
     for col in cols:
         data[col] = pd.to_numeric(data[col], errors='coerce') 
         data.loc[data[col] > 125, col] = np.nan
 
 
-    # Remove outliers from columns that look numerical in PreInt
-    from scipy import stats
-    cols = [x for x in data.columns if "PreInt" in x]
-    cols = features.get_possibly_numeric_cols(data[cols])
-    data[cols] = data[cols].apply(pd.to_numeric)
-
-    print(cols)
+    # Take average of parent height, weight, age (PreInt_Demos_Fam,P2_Weight, PreInt_Demos_Fam,P1_Weight; PreInt_Demos_Fam,P1_Height_In, PreInt_Demos_Fam,P2_Height_In, PreInt_Demos_Fam,P1_Age, PreInt_Demos_Fam,P2_Age)
+    cols = [x for x in data.columns if "PreInt_Demos_Fam,P1_" in x and "Weight" in x or "PreInt_Demos_Fam,P2_" in x and "Weight" in x]
+    data["PreInt_Demos_Fam,Parent_Weight"] = data[cols].astype(float).mean(axis=1)
     
-    # Print the valid columns
-    print(stats.zscore(data[['PreInt_DevHx,skill_age_01', 'PreInt_DevHx,skill_age_02']], axis=1, nan_policy='omit'))
-    #print((np.abs(stats.zscore(data[cols], nan_policy='omit')) < 3).all(axis=1))
-    #data[cols][(np.abs(stats.zscore(data[cols], nan_policy='omit')) < 3).all(axis=1)]
-    # Print outliers to check
-    #data[cols][~(np.abs(stats.zscore(data[cols], nan_policy='omit')) < 3).all(axis=1)]
+    cols = [x for x in data.columns if "PreInt_Demos_Fam,P1_" in x and "Height" in x or "PreInt_Demos_Fam,P2_" in x and "Height" in x]
+    data["PreInt_Demos_Fam,Parent_Height"] = data[cols].astype(float).mean(axis=1)
 
+    cols = [x for x in data.columns if "PreInt_Demos_Fam,P1_" in x and "Age" in x or "PreInt_Demos_Fam,P2_" in x and "Age" in x]
+    data["PreInt_Demos_Fam,Parent_Age"] = data[cols].astype(float).mean(axis=1)
+
+    
+    # Set negative values in PreInt_Demos_Fam,Married_Yrs col to NaN
+    data.loc[data["PreInt_Demos_Fam,Married_Yrs"].astype(float) < 0, "PreInt_Demos_Fam,Married_Yrs"] = np.nan
+    
     return data
