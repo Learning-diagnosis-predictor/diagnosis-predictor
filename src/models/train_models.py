@@ -236,7 +236,7 @@ def main(performance_margin = 0.02, models_from_file = 1):
     print("Train set shape: ", datasets[diag_cols[0]]["X_train_train"].shape)
 
     if DEBUG_MODE:
-        #diag_cols = diag_cols[0:2]
+        diag_cols = ["New Diag.NVLD"]
         pass
 
     if models_from_file == 1:

@@ -27,7 +27,7 @@ def remove_irrelevant_nih_cols(full):
 
     # Drop percentile scores, only keep actual score
     NIH_cols_to_drop = [x for x in NIH_scores_cols if x.endswith("_P")]
-    full = full.drop(NIH_cols_to_drop, axis = 1)
+    #full = full.drop(NIH_cols_to_drop, axis = 1) # Don't drop for NDLD, don't forget to remove from input vars in create_datasets.py
 
     # Drop non-numeric columns
     full = full.drop(["NIH_Scores,NIH7_Incomplete_Reason"], axis = 1)
@@ -222,7 +222,7 @@ def separate_item_lvl_from_scale_scores(data_up_to_dropped, columns_until_droppe
 
     total_score_cols_w_raw = ["SCQ,SCQ_Total", 
                         "Barratt,Barratt_Total", 
-                        "ASSQ,ASSQ_Total",
+                        #"ASSQ,ASSQ_Total", # Need for NVLD prediction, don't forget to exclude from input vars in create_datasets.py
                         "ARI_P,ARI_P_Total_Score", 
                         "SWAN,SWAN_Total",
                         "SRS,SRS_Total", 
@@ -261,7 +261,9 @@ def separate_item_lvl_from_scale_scores(data_up_to_dropped, columns_until_droppe
     subscale_score_cols_w_raw = ["Barratt,Barratt_Total_Edu", "Barratt,Barratt_Total_Occ",
                         "SWAN,SWAN_HY", "SWAN,SWAN_IN",
                         "SRS,SRS_AWR_T", "SRS,SRS_AWR", "SRS,SRS_COG_T", "SRS,SRS_COG", "SRS,SRS_COM_T", "SRS,SRS_COM", "SRS,SRS_DSMRRB_T", "SRS,SRS_DSMRRB", "SRS,SRS_MOT_T", "SRS,SRS_MOT", "SRS,SRS_RRB_T", "SRS,SRS_RRB", "SRS,SRS_SCI_T", "SRS,SRS_SCI",
-                        "CBCL,CBCL_AB_T", "CBCL,CBCL_AB", "CBCL,CBCL_AD_T", "CBCL,CBCL_AD", "CBCL,CBCL_AP_T", "CBCL,CBCL_AP", "CBCL,CBCL_Ext_T", "CBCL,CBCL_Ext", "CBCL,CBCL_Int_T", "CBCL,CBCL_Int", "CBCL,CBCL_RBB_T", "CBCL,CBCL_RBB", "CBCL,CBCL_SC_T", "CBCL,CBCL_SC", "CBCL,CBCL_SP_T", "CBCL,CBCL_SP", "CBCL,CBCL_TP_T", "CBCL,CBCL_TP", "CBCL,CBCL_WD_T", "CBCL,CBCL_WD", "CBCL,CBCL_C", "CBCL,CBCL_OP",
+                        "CBCL,CBCL_AB_T", "CBCL,CBCL_AB", "CBCL,CBCL_AD_T", "CBCL,CBCL_AD", "CBCL,CBCL_AP_T", "CBCL,CBCL_AP", "CBCL,CBCL_Ext_T", "CBCL,CBCL_Ext", "CBCL,CBCL_Int_T", "CBCL,CBCL_Int", "CBCL,CBCL_RBB_T", "CBCL,CBCL_RBB", "CBCL,CBCL_SC_T", "CBCL,CBCL_SC", 
+                        # "CBCL,CBCL_SP_T",  Need for NVLD prediction, don't forget to exclude from input vars in create_datasets.py
+                        "CBCL,CBCL_SP", "CBCL,CBCL_TP_T", "CBCL,CBCL_TP", "CBCL,CBCL_WD_T", "CBCL,CBCL_WD", "CBCL,CBCL_C", "CBCL,CBCL_OP",
                         "ICU_P,ICU_P_Callous", "ICU_P,ICU_P_Uncaring", "ICU_P,ICU_P_Unemotional",
                         "ICU_SR,ICU_SR_Callous", "ICU_SR,ICU_SR_Uncaring", "ICU_SR,ICU_SR_Unemotional",
                         "PANAS_PositiveAffect", "PANAS_NegativeAffect",
@@ -322,7 +324,8 @@ def export_datasets(data_up_to_dropped_item_lvl, data_up_to_dropped_total_scores
 
 def make_full_dataset(only_assessment_distribution, first_assessment_to_drop, only_free_assessments, dirs):
 
-    cog_task_cols = {"WISC": ["WISC,WISC_FSIQ", "WISC,WISC_PSI"], "WIAT": ["WIAT,WIAT_Num_Stnd", "WIAT,WIAT_Word_Stnd", "WIAT,WIAT_Spell_Stnd"]}
+    cog_task_cols = {"WISC": ["WISC,WISC_FSIQ", "WISC,WISC_PSI", "WISC,WISC_VCI", "WISC,WISC_VSI"], 
+                     "WIAT": ["WIAT,WIAT_Num_Stnd", "WIAT,WIAT_Word_Stnd", "WIAT,WIAT_Spell_Stnd", "WIAT,WIAT_Num_P", "WIAT,WIAT_Word_P"]}
 
     # Get relevant assessments: 
     #   relevant cognitive tests, Questionnaire Measures of Emotional and Cognitive Status, and 

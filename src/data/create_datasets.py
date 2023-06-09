@@ -61,6 +61,9 @@ def get_input_cols_per_diag(full_dataset, diag, use_other_diags_as_input):
         input_cols = [x for x in full_dataset.columns if 
                         not x.startswith("WIAT")
                         and not x.startswith("WISC")
+                        and not x == "ASSQ,ASSQ_Total"
+                        and not x == "CBCL,CBCL_SP_T"
+                        and not (x.startswith("NIH") and x.endswith("_P"))
                         and not x == "Diag.No Diagnosis Given"
                         and not x == get_cons_diag_col_name_from_new_diag(diag)
                         and not x == diag]
@@ -68,9 +71,16 @@ def get_input_cols_per_diag(full_dataset, diag, use_other_diags_as_input):
         input_cols = [x for x in full_dataset.columns if 
                         not x.startswith("WIAT")
                         and not x.startswith("WISC")
+                        and not x == "ASSQ,ASSQ_Total"
+                        and not x == "CBCL,CBCL_SP_T"
+                        and not (x.startswith("NIH") and x.endswith("P"))
                         and not x.startswith("New Diag.")
                         and not x == get_cons_diag_col_name_from_new_diag(diag)
                         and not x.startswith("Diag.")]
+        
+    # Remove NIH scores when predicting NVLD (used in definition)
+    if diag == "New Diag.NVLD":
+        input_cols = [x for x in input_cols if not x.startswith("NIH")]
 
     input_cols = customize_input_cols_per_diag(input_cols, diag)
     print("Input assessemnts used: ", list(set([x.split(",")[0] for x in input_cols])))
@@ -185,6 +195,7 @@ def main(only_assessment_distribution, first_assessment_to_drop, use_other_diags
 
         diag_cols = find_diags_w_enough_positive_examples_in_val_set(positive_examples_in_ds, all_diags, split_percentage, min_pos_examples_val_set)
         print("Diagnoses with enough positive examples in validation set: ", diag_cols)
+        diag_cols += ["New Diag.NVLD"] # DEBUG
 
         # Create datasets for each diagnosis (different input and output columns)
         datasets = split_datasets_per_diag(full_dataset, diag_cols, split_percentage, use_other_diags_as_input)
