@@ -425,6 +425,9 @@ def make_full_dataset(only_assessment_distribution, first_assessment_to_drop, on
         # Convert new boolean columns to numeric
         data_up_to_dropped = data_up_to_dropped.replace({True: 1, False: 0})
 
+        # Drop columns without variance
+        data_up_to_dropped = data_up_to_dropped.loc[:, data_up_to_dropped.apply(pd.Series.nunique) != 1]
+
         # Separate subscale and total scores
         data_up_to_dropped_item_lvl, data_up_to_dropped_total_scores, data_up_to_dropped_subscale_scores = separate_item_lvl_from_scale_scores(data_up_to_dropped, columns_until_dropped)
 

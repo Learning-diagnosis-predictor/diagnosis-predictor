@@ -92,10 +92,14 @@ def aggregate_pre_int_famhx_rdc(data):
 
 def transform_pre_int_lang(data):
 
+    lang_cols = ["PreInt_Lang,Child_Lang1_Life",
+                "PreInt_Lang,Child_Lang2_Life",
+                "PreInt_Lang,Child_Lang3_Life"]
+    
+    data[lang_cols] = data[lang_cols].apply(pd.to_numeric)
+
     # How many languages the child speaks since birth
-    data["PreInt_Lang,NumLangs"] = data[["PreInt_Lang,Child_Lang1_Life",
-                                         "PreInt_Lang,Child_Lang2_Life",
-                                         "PreInt_Lang,Child_Lang3_Life"]].sum(axis=1)
+    data["PreInt_Lang,NumLangs"] = data[lang_cols].sum(axis=1)
 
     # Drop the rest of the language columns
     data = data.drop([x for x in data.columns if "PreInt_Lang," in x and not x == "PreInt_Lang,NumLangs"], axis=1)
@@ -137,7 +141,7 @@ def transform_pre_int_cols(data):
     dict = {"Excellent": 4, "Good": 3, "Fair": 2, "Poor": 1, "excellent": 4, "good": 3, "fair": 2, "poor": 1}  
     data = replace_with_dict_otherwise_nan(data, cols, dict)
     
-    # Exchange 2 and 3 in PreInt_EduHx,current_religious, more logical order
+    # Exchange 2 and 3 in PreInt_EduHx,current_religious -- more logical order
     cols = ["PreInt_EduHx,current_religious"]
     dict = {"1": 1, "2": 3, "3": 2}
     data = replace_with_dict_otherwise_nan(data, cols, dict)
@@ -152,10 +156,7 @@ def transform_pre_int_cols(data):
     cols = [x for x in data.columns if "_Height_Ft" in x]
     for ft_col in cols:
         inch_col = ft_col.replace("_Ft", "_In")
-        # Convert height to inches
-        data[ft_col] = data[ft_col].astype('Int64')
-        data[inch_col] = data[inch_col].astype('Int64')
-        data[inch_col] = data[ft_col] * 12 + data[inch_col]
+        data[inch_col] = data[ft_col].astype('Int64') * 12 + data[inch_col].astype('Int64')
         data = data.drop(ft_col, axis=1)
 
     # Transform weight to lbs
