@@ -110,9 +110,10 @@ def get_cumul_number_of_examples_df(full_wo_underscore, EID_columns_by_popularit
     for i in range(1, len(EID_columns_by_popularity)+1):
         columns = EID_columns_by_popularity[0:i] # top i assessments
         cumul_number_of_examples = full_wo_underscore[columns].notnull().all(axis=1).sum()
-        cumul_number_of_examples_list.append([cumul_number_of_examples, [x.split(",")[0] for x in columns]])
+        min_age_among_non_null = full_wo_underscore[full_wo_underscore[columns].notnull().all(axis=1)]["Basic_Demos,Age"].astype(float).min()
+        cumul_number_of_examples_list.append([cumul_number_of_examples, [x.split(",")[0] for x in columns], min_age_among_non_null])
     cumul_number_of_examples_df = pd.DataFrame(cumul_number_of_examples_list)
-    cumul_number_of_examples_df.columns = ("Respondents", "Assessments")
+    cumul_number_of_examples_df.columns = ("Respondents", "Assessments", "Min Age")
     cumul_number_of_examples_df["N of Assessments"] = cumul_number_of_examples_df["Assessments"].str.len()
     cumul_number_of_examples_df["Last Assessment"] = cumul_number_of_examples_df["Assessments"].str[-1]
     return cumul_number_of_examples_df
@@ -163,7 +164,6 @@ def convert_numeric_col_to_numeric_type(col):
 
 def get_missing_values_df(data_up_to_dropped):
     missing_report_up_to_dropped = data_up_to_dropped.isna().sum().to_frame(name="Amount missing")
-    print("DEBUG", missing_report_up_to_dropped, missing_report_up_to_dropped.index)
     missing_report_up_to_dropped["Persentage missing"] = missing_report_up_to_dropped["Amount missing"]/data_up_to_dropped["ID"].nunique() * 100
     missing_report_up_to_dropped = missing_report_up_to_dropped[~missing_report_up_to_dropped.index.str.contains("Diagnosis_ClinicianConsensus")] # remove dx because it's expected to be missing
     missing_report_up_to_dropped = missing_report_up_to_dropped[missing_report_up_to_dropped["Persentage missing"] > 0]
@@ -317,7 +317,7 @@ def make_full_dataset(only_assessment_distribution, first_assessment_to_drop, on
                                  "PreInt_Demos_Home", "PreInt_Demos_Fam", "NIH_Scores", "SympChck", "SCQ", "Barratt", 
         "ASSQ", "ARI_P", "SDQ", "SWAN", "SRS", "CBCL", "ICU_P", "ICU_SR", "PANAS", "APQ_P", "PCIAT", "DTS", "ESWAN", "MFQ_P", "APQ_SR", 
         "WHODAS_P", "CIS_P", "SAS", "PSI", "RBS", "PhenX_Neighborhood", "WHODAS_SR", "CIS_SR", "SCARED_P", "SCARED_SR", 
-        "C3SR", "CCSC", "CPIC", "YSR", "PhenX_SchoolRisk", "CBCL_Pre", "SRS_Pre", "ASR"] + list(cog_task_cols.keys())
+        "C3SR", "CCSC", "CPIC", "YSR", "PhenX_SchoolRisk", "CBCL_Pre", "SRS_Pre", "ASR", "FSQ"] + list(cog_task_cols.keys())
     
     if only_free_assessments == 1:
         relevent_assessments_list = remove_proprietary_assessments(relevent_assessments_list)
@@ -356,6 +356,7 @@ def make_full_dataset(only_assessment_distribution, first_assessment_to_drop, on
 
     # Get list of assessments in data
     assessment_list = set([x.split(",")[0] for x in EID_cols])
+    print("Assessments in data: ", assessment_list)
 
     # Check how many people filled each assessments
     assessment_answer_counts = get_assessment_answer_count(full_wo_underscore, EID_cols)

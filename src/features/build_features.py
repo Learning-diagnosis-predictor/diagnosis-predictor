@@ -90,15 +90,27 @@ def aggregate_pre_int_famhx_rdc(data):
 
     return data
 
+def transform_pre_int_lang(data):
+
+    # How many languages the child speaks since birth
+    data["PreInt_Lang,NumLangs"] = data[["PreInt_Lang,Child_Lang1_Life",
+                                         "PreInt_Lang,Child_Lang2_Life",
+                                         "PreInt_Lang,Child_Lang3_Life"]].sum(axis=1)
+
+    # Drop the rest of the language columns
+    data = data.drop([x for x in data.columns if "PreInt_Lang," in x and not x == "PreInt_Lang,NumLangs"], axis=1)
+
+    return data
+
 def transform_pre_int_cols(data):
 
-    data = data.drop(["PreInt_EduHx,NeuroPsych", "PreInt_EduHx,IEP", "PreInt_EduHx,learning_disability"], axis=1)
-    # Previous diagnoses and meds: drop DX cols in PreInt_TxHx, drop _dose cols
-    data = data.drop([x for x in data.columns if "PreInt_TxHx,Past_DX" in x], axis=1)
-    data = data.drop([x for x in data.columns if "_dose" in x], axis=1)
-    # Drop everything from PreInt_Lang except Child_Lang1_Age, Child_Lang2_Age, Child_Lang3_Age
-    data = data.drop([x for x in data.columns if "PreInt_Lang" in x and x not in ["Child_Lang1_Age", "Child_Lang2_Age", "Child_Lang3_Age"]], axis=1)
-    data = data.drop("PreInt_FamHx_RDC,caregiver_relation", axis=1) 
+    data = data.drop(["PreInt_EduHx,NeuroPsych", "PreInt_EduHx,IEP", "PreInt_EduHx,learning_disability"] + # Self-evident
+                     [x for x in data.columns if "PreInt_TxHx,Past_DX" in x] + # Could be learning disability
+                     [x for x in data.columns if "_dose" in x], axis=1)
+    
+
+    # Tansform PreInt_Lang
+    data = transform_pre_int_lang(data)
 
 
     # One hot encode categorical cols
@@ -114,7 +126,6 @@ def transform_pre_int_cols(data):
     cols = [x for x in data.columns if "PreInt_DevHx,skill_range_" in x]   
     dict = {"Early": -1, "early": -1, "Normal": 0, "normal": 0, "Late": 1, "late": 1}  
     replace_with_dict_otherwise_nan(data, cols, dict)
-    print("DEBUG", data[data[cols].notna().any(1)][cols].head(10))
 
     # Clearn PreInt_FamHx_RDC cols: in *alive cols, replace everything that is not 1 or 2 with NaN
     cols = [x for x in data.columns if "PreInt_FamHx_RDC" in x and "alive" in x]
@@ -168,6 +179,9 @@ def transform_pre_int_cols(data):
         data[col] = pd.to_numeric(data[col], errors='coerce') 
         data.loc[data[col] > 125, col] = np.nan
 
+    # Set negative values in PreInt_Demos_Fam,Married_Yrs col to NaN
+    data.loc[data["PreInt_Demos_Fam,Married_Yrs"].astype(float) < 0, "PreInt_Demos_Fam,Married_Yrs"] = np.nan
+    
 
     # Take average of parent height, weight, age (PreInt_Demos_Fam,P2_Weight, PreInt_Demos_Fam,P1_Weight; PreInt_Demos_Fam,P1_Height_In, PreInt_Demos_Fam,P2_Height_In, PreInt_Demos_Fam,P1_Age, PreInt_Demos_Fam,P2_Age)
     cols = [x for x in data.columns if "PreInt_Demos_Fam,P1_" in x and "Weight" in x or "PreInt_Demos_Fam,P2_" in x and "Weight" in x]
@@ -178,9 +192,5 @@ def transform_pre_int_cols(data):
 
     cols = [x for x in data.columns if "PreInt_Demos_Fam,P1_" in x and "Age" in x or "PreInt_Demos_Fam,P2_" in x and "Age" in x]
     data["PreInt_Demos_Fam,Parent_Age"] = data[cols].astype(float).mean(axis=1)
-
-    
-    # Set negative values in PreInt_Demos_Fam,Married_Yrs col to NaN
-    data.loc[data["PreInt_Demos_Fam,Married_Yrs"].astype(float) < 0, "PreInt_Demos_Fam,Married_Yrs"] = np.nan
     
     return data
